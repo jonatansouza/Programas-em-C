@@ -7,22 +7,28 @@ List* create_list(){
 }
 
 
-int insert_item(List *l, int val){		
+int insert_item(List *l, int val){
 	if(l==NULL)return 0;
-
-	if(l->next == NULL){
-		printf("insert vazio\n");
+if(l->next == NULL){
 		l->val = val;
 		l->next=l;
 	}else{
 		List *n = malloc(sizeof(List));
 		n->val = val;
-		printf("insert\n");
+		n->next = NULL;
 		List *aux = l;
-		while(aux->next != l)
+		while(aux->next != l){
+			if(n->val < aux->next->val){
+				n->next = aux->next;
+				aux->next = n;
+				break;
+			}
 			aux = aux->next;
-		aux->next = n;
-		n->next = l;
+		}
+		if(n->next == NULL){
+			aux->next = n;
+			n->next = l;
+		}
 	}
 	return 1;
 }
