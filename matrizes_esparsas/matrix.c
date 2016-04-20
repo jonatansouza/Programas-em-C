@@ -105,6 +105,10 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         return 1;
 }
 
+int matrix_destroy( Matrix* m ){
+        printf("Destroy -> %p\n", m);
+}
+
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
