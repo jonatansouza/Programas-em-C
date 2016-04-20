@@ -1,6 +1,6 @@
 /**
-*@author Jonatan Souza
-*/
+   *@author Jonatan Souza
+ */
 #ifndef _Matrix
 #define _Matrix
 
