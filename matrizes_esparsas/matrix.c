@@ -37,8 +37,8 @@ int matrix_create(Matrix **m){
         (*m) = malloc (sizeof (Matrix));
         (*m)->right = (*m);
         (*m)->below = (*m);
-        (*m)->line = -1;
-        (*m)->column = -1;
+        (*m)->line = LINES;
+        (*m)->column = COLUMNS;
         (*m)->info = FLT_MIN;
 
         printf("MATRIX SIZE: %d x %d\n", LINES, COLUMNS);
@@ -98,6 +98,30 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         return 1;
 }
 
+int matrix_setelem( Matrix* m, int x, int y, float elem ){
+        Matrix *head = (Matrix *) m;
+        int i;
+        //set Line
+        for(i=0; i < x; i++)
+                head = head->below;
+
+        int found = 0;
+        Matrix *aux;
+        for(aux = head->right; aux != head; aux = aux->right) {
+                if(aux->line == x && aux->column == y) {
+                        found = 1;
+                        break;
+                }
+        }
+
+        if(found) {
+                aux->info = elem;
+                return 1;
+        }else
+                return 0;
+
+}
+
 int matrix_destroy( Matrix* m ){
         Matrix *aux = m;
         Matrix *ref, *trash;
@@ -115,6 +139,14 @@ int matrix_destroy( Matrix* m ){
         ref->below = m;
         matrix_destroy(m);
 
+}
+
+int matrix_print( const Matrix* m ){
+        //TODO
+}
+
+int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
+        printf("add matrix\n");
 }
 
 //********************//
