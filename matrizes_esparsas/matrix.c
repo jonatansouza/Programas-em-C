@@ -4,6 +4,8 @@
 
 #include "matrix.h"
 
+#define INPUT_MAX_SIZE 1000
+
 struct matrix {
         struct matrix *right;
         struct matrix *below;
@@ -20,18 +22,24 @@ void destroy_line(Matrix *m);
 
 
 int matrix_create(Matrix **m){
-        float matrixDescription[1000];
+        int i;
+        float matrixDescription[INPUT_MAX_SIZE];
 
         int matrixDescriptionSize=0;
-        while(scanf("%f", &matrixDescription[matrixDescriptionSize]) > 0)
+        for(i=0; i< INPUT_MAX_SIZE; i++) {
+                scanf("%f", &matrixDescription[matrixDescriptionSize]);
+                if(matrixDescription[matrixDescriptionSize] == 0)
+                        break;
                 matrixDescriptionSize++;
 
-        int i;
+        }
+
+
         const int LINES =(int) matrixDescription[0];
         const int COLUMNS =(int) matrixDescription[1];
 
         float * matrixElements = matrixDescription+2;
-        const int matrixElementsSize = matrixDescriptionSize-3;
+        const int matrixElementsSize = matrixDescriptionSize-2;
 
         //MasterHeadNode
         (*m) = malloc (sizeof (Matrix));
@@ -65,11 +73,11 @@ int matrix_create(Matrix **m){
                 (*m)->right = mNew;
         }
 
-        for(i=0; i < 6; i++)
+        for(i=0; i < (matrixElementsSize/3); i++)
                 insert_element((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], matrixElements[(i*3)+2]);
 
         float *foo;
-        for(i=0; i < 6; i++)
+        for(i=0; i < (matrixElementsSize/3); i++)
                 matrix_getelem((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], foo);
 
         return 1;
@@ -92,7 +100,7 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         }
 
         if(found) {
-                printf("Valor encontrado!\n");
+                printf("\nValor encontrado!\n");
                 imprimeNode(aux);
         }
         return 1;
@@ -155,14 +163,14 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 
 
 void imprimeNode(Matrix *m){
-        printf("\n*****************\n");
+        printf("*****************\n");
         printf("ITSELF:%p\n", m);
         printf("right:%p\n", m->right );
         printf("below:%p\n", m->below );
         printf("line:%d\n", m->line );
         printf("column:%d\n", m->column);
         printf("info:%f\n", m->info);
-        printf("******************\n");
+        printf("*****************\n");
 }
 
 void insert_element(Matrix *m, int line, int column, float info){
