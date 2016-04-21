@@ -12,18 +12,12 @@ struct matrix {
         float info;
 };
 
-void imprimeNode(Matrix *m){
-        printf("\n*****************\n");
-        printf("ITSELF:%p\n", m);
-        printf("right:%p\n", m->right );
-        printf("below:%p\n", m->below );
-        printf("line:%d\n", m->line );
-        printf("column:%d\n", m->column);
-        printf("info:%f\n", m->info);
-        printf("******************\n");
-}
-
+//AUXILIAR FUNCTIONS
+void imprimeNode(Matrix *m);
 void insert_element(Matrix *m, int line, int column, float info);
+void destroy_line(Matrix *m);
+//AUXILIAR FUNCTIONS
+
 
 int matrix_create(Matrix **m){
         float matrixDescription[1000];
@@ -78,15 +72,14 @@ int matrix_create(Matrix **m){
         for(i=0; i < 6; i++)
                 matrix_getelem((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], foo);
 
-
         return 1;
 }
 
 int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
-        Matrix *head = (Matrix *)m;
+        Matrix *head = (Matrix *) m;
         int i;
 //set Line
-        for(i=0; i<=x; i++)
+        for(i=0; i < x; i++)
                 head = head->below;
 
         int found = 0;
@@ -106,12 +99,40 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
 }
 
 int matrix_destroy( Matrix* m ){
-        printf("Destroy -> %p\n", m);
+        Matrix *aux = m;
+        Matrix *ref, *trash;
+        if(m->below == m) {
+                destroy_line(m);
+                return 1;
+        }
+        ref = aux;
+        while(aux->below != m) {
+                ref = aux;
+                aux = aux->below;
+        }
+
+        destroy_line(aux);
+        ref->below = m;
+        matrix_destroy(m);
+
 }
 
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
+
+
+void imprimeNode(Matrix *m){
+        printf("\n*****************\n");
+        printf("ITSELF:%p\n", m);
+        printf("right:%p\n", m->right );
+        printf("below:%p\n", m->below );
+        printf("line:%d\n", m->line );
+        printf("column:%d\n", m->column);
+        printf("info:%f\n", m->info);
+        printf("******************\n");
+}
+
 void insert_element(Matrix *m, int line, int column, float info){
         Matrix *aux = m;
         int i;
@@ -122,19 +143,29 @@ void insert_element(Matrix *m, int line, int column, float info){
         mNew->column = column;
         mNew->line = line;
 //set Line
-        for(i=0; i<=line; i++)
+        for(i=0; i<line; i++)
                 aux = aux->below;
 
         mNew->right = aux->right;
         aux->right = mNew;
-
 //set column
 //set origin
         aux = m;
-        for(i=0; i<=column; i++)
+        for(i=0; i<column; i++)
                 aux = aux->right;
 
         mNew->below = aux->below;
         aux->below = mNew;
 
+
+}
+
+void destroy_line(Matrix *m){
+        Matrix *aux = m, *trash;
+        while(aux->right != m) {
+                trash = aux;
+                aux = aux->right;
+                free(trash);
+        }
+        free(aux);
 }
