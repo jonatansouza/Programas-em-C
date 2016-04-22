@@ -18,6 +18,7 @@ struct matrix {
 void imprimeNode(Matrix *m);
 void insert_element(Matrix *m, int line, int column, float info);
 void destroy_line(Matrix *m);
+void matrix_print_line(Matrix *m);
 //AUXILIAR FUNCTIONS
 
 
@@ -100,10 +101,11 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         }
 
         if(found) {
-                printf("\nValor encontrado!\n");
-                imprimeNode(aux);
+                /*printf("\nValor encontrado!\n");
+                   imprimeNode(aux);*/
+                return 1;
         }
-        return 1;
+        return 0;
 }
 
 int matrix_setelem( Matrix* m, int x, int y, float elem ){
@@ -150,7 +152,11 @@ int matrix_destroy( Matrix* m ){
 }
 
 int matrix_print( const Matrix* m ){
-        //TODO
+        Matrix *aux = (Matrix *) m->below;
+        while(aux != m) {
+                matrix_print_line(aux);
+                aux = aux->below;
+        }
 }
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
@@ -161,6 +167,16 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 // AUXILIAR FUNCTIONS //
 //********************//
 
+
+void matrix_print_line(Matrix *m){
+        Matrix *aux = m->right;
+        while(aux != m) {
+                printf("line %d, ", aux->line);
+                printf("column %d, ", aux->column);
+                printf("info %f\n", aux->info);
+                aux = aux->right;
+        }
+}
 
 void imprimeNode(Matrix *m){
         printf("*****************\n");
@@ -175,6 +191,7 @@ void imprimeNode(Matrix *m){
 
 void insert_element(Matrix *m, int line, int column, float info){
         Matrix *aux = m;
+        Matrix *ref;
         int i;
 
 //new node
@@ -186,13 +203,22 @@ void insert_element(Matrix *m, int line, int column, float info){
         for(i=0; i<line; i++)
                 aux = aux->below;
 
+        ref = aux;
+        while(aux->right != ref)
+                aux = aux->right;
+
         mNew->right = aux->right;
         aux->right = mNew;
 //set column
 //set origin
         aux = m;
+
         for(i=0; i<column; i++)
                 aux = aux->right;
+
+        ref = aux;
+        while(aux->below != ref)
+                aux = aux->below;
 
         mNew->below = aux->below;
         aux->below = mNew;
