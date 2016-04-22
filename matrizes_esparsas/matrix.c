@@ -50,8 +50,6 @@ int matrix_create(Matrix **m){
         (*m)->column = COLUMNS;
         (*m)->info = FLT_MIN;
 
-        printf("MATRIX SIZE: %d x %d\n", LINES, COLUMNS);
-
         //create LINES Heads
         for(i=0; i<LINES; i++) {
                 Matrix *mNew = malloc(sizeof (Matrix));
@@ -153,14 +151,35 @@ int matrix_destroy( Matrix* m ){
 
 int matrix_print( const Matrix* m ){
         Matrix *aux = (Matrix *) m->below;
+        printf("********** MATRIX %d X %d **********\n", m->line,
+               m->column);
         while(aux != m) {
                 matrix_print_line(aux);
                 aux = aux->below;
         }
+        printf("\n");
 }
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
-        printf("add matrix\n");
+        float inputs[INPUT_MAX_SIZE];
+
+        Matrix * headA = (Matrix *)m->below, * headB = (Matrix *)n->below;
+        int i, j, LINE, COLUMN, inputsSize = 2;
+        if(m->line != n->line || m->column != n->column)
+                return 0;
+
+        LINE = m->line;
+        COLUMN = m->column;
+
+        inputs[0] = LINE;
+        inputs[1] = COLUMN;
+
+
+        for(i=0; i<LINE; i++) {
+                headA = headA->below;
+                headB = headB->below;
+        }
+
 }
 
 //********************//
