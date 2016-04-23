@@ -15,6 +15,7 @@ struct matrix {
 };
 
 //AUXILIAR FUNCTIONS
+void create_estructure(Matrix **m, int LINES, int COLUMNS);
 void imprimeNode(Matrix *m);
 void insert_element(Matrix *m, int line, int column, float info);
 void destroy_line(Matrix *m);
@@ -42,42 +43,10 @@ int matrix_create(Matrix **m){
         float * matrixElements = matrixDescription+2;
         const int matrixElementsSize = matrixDescriptionSize-2;
 
-        //MasterHeadNode
-        (*m) = malloc (sizeof (Matrix));
-        (*m)->right = (*m);
-        (*m)->below = (*m);
-        (*m)->line = LINES;
-        (*m)->column = COLUMNS;
-        (*m)->info = FLT_MIN;
-
-        //create LINES Heads
-        for(i=0; i<LINES; i++) {
-                Matrix *mNew = malloc(sizeof (Matrix));
-                mNew->column = -1;
-                mNew->line = 0;
-                mNew->info = FLT_MIN;
-                mNew->right = mNew;
-                mNew->below = (*m)->below;
-                (*m)->below = mNew;
-        }
-
-        //create COLUMNS Heads
-        for(i=0; i<COLUMNS; i++) {
-                Matrix *mNew = malloc(sizeof (Matrix));
-                mNew->line = -1;
-                mNew->column = 0;
-                mNew->info = FLT_MIN;
-                mNew->below = mNew;
-                mNew->right = (*m)->right;
-                (*m)->right = mNew;
-        }
+        create_estructure(m, LINES, COLUMNS);
 
         for(i=0; i < (matrixElementsSize/3); i++)
                 insert_element((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], matrixElements[(i*3)+2]);
-
-        float *foo;
-        for(i=0; i < (matrixElementsSize/3); i++)
-                matrix_getelem((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], foo);
 
         return 1;
 }
@@ -93,16 +62,16 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         Matrix *aux;
         for(aux = head->right; aux != head; aux = aux->right) {
                 if(aux->line == x && aux->column == y) {
+                        *elem = aux->info;
                         found = 1;
                         break;
                 }
         }
 
         if(found) {
-                /*printf("\nValor encontrado!\n");
-                   imprimeNode(aux);*/
                 return 1;
         }
+        *elem = 0;
         return 0;
 }
 
@@ -161,31 +130,70 @@ int matrix_print( const Matrix* m ){
 }
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
-        float inputs[INPUT_MAX_SIZE];
 
-        Matrix * headA = (Matrix *)m->below, * headB = (Matrix *)n->below;
-        int i, j, LINE, COLUMN, inputsSize = 2;
+        float inputs[INPUT_MAX_SIZE];
+        int i, j, LINE, COLUMN, inputsSize = 0;
+        float infoA, infoB;
         if(m->line != n->line || m->column != n->column)
                 return 0;
 
         LINE = m->line;
         COLUMN = m->column;
 
-        inputs[0] = LINE;
-        inputs[1] = COLUMN;
-
-
+        create_estructure(r, LINE, COLUMN);
         for(i=0; i<LINE; i++) {
-                headA = headA->below;
-                headB = headB->below;
+                for(j=0; j<COLUMN; j++) {
+                        matrix_getelem(m, i+1, j+1, &infoA);
+                        matrix_getelem(n, i+1, j+1, &infoB);
+                        //printf("matrix %d,%d, %f\n",i+1, j+1, infoA);
+                        if(infoA != 0 || infoB !=0) {
+                                inputs[inputsSize++] = i+1;
+                                inputs[inputsSize++] = j+1;
+                                inputs[inputsSize++] = infoA+infoB;
+                        }
+                }
         }
-
+        for(i=0; i<inputsSize/3; i++) {
+                insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
+        }
 }
 
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
 
+void create_estructure(Matrix **m, int LINES, int COLUMNS){
+        int i;
+        //MasterHeadNode
+        (*m) = malloc (sizeof (Matrix));
+        (*m)->right = (*m);
+        (*m)->below = (*m);
+        (*m)->line = LINES;
+        (*m)->column = COLUMNS;
+        (*m)->info = FLT_MIN;
+
+        //create LINES Heads
+        for(i=0; i<LINES; i++) {
+                Matrix *mNew = malloc(sizeof (Matrix));
+                mNew->column = -1;
+                mNew->line = 0;
+                mNew->info = FLT_MIN;
+                mNew->right = mNew;
+                mNew->below = (*m)->below;
+                (*m)->below = mNew;
+        }
+
+        //create COLUMNS Heads
+        for(i=0; i<COLUMNS; i++) {
+                Matrix *mNew = malloc(sizeof (Matrix));
+                mNew->line = -1;
+                mNew->column = 0;
+                mNew->info = FLT_MIN;
+                mNew->below = mNew;
+                mNew->right = (*m)->right;
+                (*m)->right = mNew;
+        }
+}
 
 void matrix_print_line(Matrix *m){
         Matrix *aux = m->right;
