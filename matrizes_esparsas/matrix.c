@@ -158,6 +158,40 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
         }
 }
 
+int matrix_multiply( const Matrix* m, const Matrix* n, Matrix** r ){
+        float inputs[INPUT_MAX_SIZE];
+        int i, j, k, LINE, COLUMN, ELEMENTS, inputsSize = 0;
+        float infoA, infoB, result = 0;
+        if(m->line != n->column)
+                return 0;
+        LINE = m->line;
+        COLUMN = n->column;
+        ELEMENTS = m->column;
+
+        create_estructure(r, LINE, COLUMN);
+
+        for(i=0; i<LINE; i++) {
+                for(j=0; j<COLUMN; j++) {
+                        for(k=0; k < ELEMENTS; k++) {
+                                matrix_getelem(m, i+1, j+1, &infoA);
+                                matrix_getelem(n, j+1, k+1, &infoB);
+                                result += infoA * infoB;
+                        }
+                        if(result) {
+                                inputs[inputsSize++] = i+1;
+                                inputs[inputsSize++] = j+1;
+                                inputs[inputsSize++] = result;
+                        }
+                        result = 0;
+                }
+        }
+
+        for(i=0; i<inputsSize/3; i++) {
+                insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
+        }
+
+}
+
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
@@ -198,8 +232,8 @@ void create_estructure(Matrix **m, int LINES, int COLUMNS){
 void matrix_print_line(Matrix *m){
         Matrix *aux = m->right;
         while(aux != m) {
-                printf("line %d, ", aux->line);
-                printf("column %d, ", aux->column);
+                printf("%d , ", aux->line);
+                printf("%d, ", aux->column);
                 printf("info %f\n", aux->info);
                 aux = aux->right;
         }
