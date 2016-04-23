@@ -192,6 +192,33 @@ int matrix_multiply( const Matrix* m, const Matrix* n, Matrix** r ){
 
 }
 
+int matrix_transpose( const Matrix* m, Matrix** r ){
+        float inputs[INPUT_MAX_SIZE];
+        int i, j, LINE, COLUMN, inputsSize = 0;
+        float info;
+
+        LINE = m->column;
+        COLUMN = m->line;
+
+        create_estructure(r, LINE, COLUMN);
+
+        for(i=0; i < COLUMN; i++) {
+                for(j=0; j<LINE; j++ ) {
+                        matrix_getelem(m, i+1, j+1, &info);
+                        if(info) {
+                                inputs[inputsSize++] = j+1;
+                                inputs[inputsSize++] = i+1;
+                                inputs[inputsSize++] = info;
+                        }
+                }
+        }
+
+        for(i=0; i<inputsSize/3; i++) {
+                insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
+        }
+
+}
+
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//

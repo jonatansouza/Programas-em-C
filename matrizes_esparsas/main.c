@@ -11,7 +11,8 @@ int main(){
         matrix_print(n);
 
         //matrix_add(m,n,&r);
-        matrix_multiply(m, n, &r);
+        //matrix_multiply(m, n, &r);
+        matrix_transpose(n, &r);
         matrix_print(r);
 
         matrix_destroy(m);
