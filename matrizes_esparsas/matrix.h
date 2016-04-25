@@ -5,7 +5,6 @@
 #define _Matrix
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <float.h>
 
 struct matrix;

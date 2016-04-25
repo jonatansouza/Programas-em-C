@@ -48,7 +48,7 @@ int matrix_create(Matrix **m){
         for(i=0; i < (matrixElementsSize/3); i++)
                 insert_element((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], matrixElements[(i*3)+2]);
 
-        return 1;
+        return 0;
 }
 
 int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
@@ -69,10 +69,10 @@ int matrix_getelem( const Matrix* m, int x, int y, float *elem ){
         }
 
         if(found) {
-                return 1;
+                return 0;
         }
         *elem = 0;
-        return 0;
+        return 1;
 }
 
 int matrix_setelem( Matrix* m, int x, int y, float elem ){
@@ -93,18 +93,20 @@ int matrix_setelem( Matrix* m, int x, int y, float elem ){
 
         if(found) {
                 aux->info = elem;
-                return 1;
-        }else
                 return 0;
+        }else
+                return 1;
 
 }
 
 int matrix_destroy( Matrix* m ){
         Matrix *aux = m;
-        Matrix *ref, *trash;
+        Matrix *ref;
+        if(m == NULL)
+                return 0;
         if(m->below == m) {
                 destroy_line(m);
-                return 1;
+                return 0;
         }
         ref = aux;
         while(aux->below != m) {
@@ -118,13 +120,18 @@ int matrix_destroy( Matrix* m ){
 
 }
 
+
+
 int matrix_print( const Matrix* m ){
-        Matrix *aux = (Matrix *) m->below;
-        printf("********** MATRIX %d X %d **********\n", m->line,
-               m->column);
-        while(aux != m) {
-                matrix_print_line(aux);
-                aux = aux->below;
+        int i, j;
+        float info;
+        printf("********** MATRIX %d X %d **********\n", m->line, m->column);
+        for(i = 0; i < m->line; i++) {
+                for(j=0; j<m->column; j++) {
+                        matrix_getelem(m, i+1, j+1, &info);
+                        printf("%f      ", info);
+                }
+                printf("\n");
         }
         printf("\n");
 }
@@ -135,7 +142,7 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
         int i, j, LINE, COLUMN, inputsSize = 0;
         float infoA, infoB;
         if(m->line != n->line || m->column != n->column)
-                return 0;
+                return 1;
 
         LINE = m->line;
         COLUMN = m->column;
@@ -156,25 +163,26 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
         for(i=0; i<inputsSize/3; i++) {
                 insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
         }
+        return 0;
 }
 
 int matrix_multiply( const Matrix* m, const Matrix* n, Matrix** r ){
         float inputs[INPUT_MAX_SIZE];
         int i, j, k, LINE, COLUMN, ELEMENTS, inputsSize = 0;
         float infoA, infoB, result = 0;
-        if(m->line != n->column)
-                return 0;
+        if(m->column != n->line)
+                return 1;
         LINE = m->line;
         COLUMN = n->column;
-        ELEMENTS = m->column;
+        ELEMENTS = m->line;
 
         create_estructure(r, LINE, COLUMN);
 
         for(i=0; i<LINE; i++) {
                 for(j=0; j<COLUMN; j++) {
                         for(k=0; k < ELEMENTS; k++) {
-                                matrix_getelem(m, i+1, j+1, &infoA);
-                                matrix_getelem(n, j+1, k+1, &infoB);
+                                matrix_getelem(m, i+1, k+1, &infoA);
+                                matrix_getelem(n, k+1, j+1, &infoB);
                                 result += infoA * infoB;
                         }
                         if(result) {
@@ -189,6 +197,7 @@ int matrix_multiply( const Matrix* m, const Matrix* n, Matrix** r ){
         for(i=0; i<inputsSize/3; i++) {
                 insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
         }
+        return 0;
 
 }
 
@@ -216,6 +225,7 @@ int matrix_transpose( const Matrix* m, Matrix** r ){
         for(i=0; i<inputsSize/3; i++) {
                 insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
         }
+        return 0;
 
 }
 
