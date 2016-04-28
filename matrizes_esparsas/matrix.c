@@ -266,27 +266,6 @@ void create_estructure(Matrix **m, int LINES, int COLUMNS){
         }
 }
 
-void matrix_print_line(Matrix *m){
-        Matrix *aux = m->right;
-        while(aux != m) {
-                printf("%d , ", aux->line);
-                printf("%d, ", aux->column);
-                printf("info %f\n", aux->info);
-                aux = aux->right;
-        }
-}
-
-void imprimeNode(Matrix *m){
-        printf("*****************\n");
-        printf("ITSELF:%p\n", m);
-        printf("right:%p\n", m->right );
-        printf("below:%p\n", m->below );
-        printf("line:%d\n", m->line );
-        printf("column:%d\n", m->column);
-        printf("info:%f\n", m->info);
-        printf("*****************\n");
-}
-
 void insert_element(Matrix *m, int line, int column, float info){
         Matrix *aux = m;
         Matrix *ref;
