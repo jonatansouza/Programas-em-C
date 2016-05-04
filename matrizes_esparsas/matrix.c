@@ -16,7 +16,6 @@ struct matrix {
 
 //AUXILIAR FUNCTIONS
 void create_estructure(Matrix **m, int LINES, int COLUMNS);
-void imprimeNode(Matrix *m);
 void insert_element(Matrix *m, int line, int column, float info);
 void destroy_line(Matrix *m);
 void matrix_print_line(Matrix *m);
@@ -123,7 +122,7 @@ int matrix_destroy( Matrix* m ){
 
 
 int matrix_print( const Matrix* m ){
-        Matrix *aux = (Matrix *) m->below;
+        Matrix *aux = m->below;
         printf("********** MATRIX %d X %d **********\n", m->line,
                m->column);
         while(aux != m) {
