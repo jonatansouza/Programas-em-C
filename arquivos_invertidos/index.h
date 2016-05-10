@@ -8,10 +8,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 struct index;
-typedef struct index _Index;
-typedef _Index* Index[M];
+typedef struct index Idx;
+typedef Idx* Index[M];
 
 
 int index_createfrom(const char *key_file, const char *text_file, Index **idx);

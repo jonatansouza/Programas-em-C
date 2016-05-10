@@ -1,12 +1,8 @@
 #include <stdio.h>
 #include "index.h"
 int main( int argc, char **argv ) {
-        Index *idx;
-        index_createfrom(argv[1], argv[2], &idx);
-
-        /* if( argc < 3 ) {
-               fprintf( stderr, "Erro:
-numero insuficiente de parametros:\n" );
+        if( argc < 3 ) {
+                fprintf( stderr, "Erro: numero insuficiente parametros:\n");
                 fprintf( stderr, "Sintaxe: %s "
                          "key_file_name txt_file_name\n", argv[0] );
                 return 1;
@@ -16,14 +12,14 @@ numero insuficiente de parametros:\n" );
                 fprintf( stderr, "Erro: criacao do indice\n" );
                 return 1;
         }
-        char keyword[17];
+        /*char keyword[17];
         printf( "Qual a palavra-chave a procurar?\n" );
         scanf( " %16[^\n]", keyword );
         int *occurrences;
         int n_occurrences;
         if( index_get( idx, keyword, &occurrences, &n_occurrences ) )
                 fprintf( stderr, "Erro: palavra nao pertence ao indice\n" );
-        else {
+           else {
                 if( n_occurrences <= 0 )
                         printf( "Nao ha ocorrencias de %s\n", keyword );
                 else {
@@ -33,23 +29,23 @@ numero insuficiente de parametros:\n" );
                                 printf( "%d, ", occurrences[i] );
                         printf( "%d\n", occurrences[n_occurrences-1] );
                 }
-        }
-        printf( "Indice completo:\n" );
-        if( index_print( idx ) ) {
+           }
+           printf( "Indice completo:\n" );
+           if( index_print( idx ) ) {
                 fprintf( stderr, "Erro: impressao do indice\n" );
                 return 1;
-        }
-        char new_keyword[17];
-        printf( "Qual a palavra-chave a inserir?\n" );
-        scanf( " %16[^\n]", new_keyword );
-        if( index_put( idx, new_keyword ) ) {
+           }
+           char new_keyword[17];
+           printf( "Qual a palavra-chave a inserir?\n" );
+           scanf( " %16[^\n]", new_keyword );
+           if( index_put( idx, new_keyword ) ) {
                 fprintf( stderr, "Erro: insercao no indice\n" );
                 return 1;
-        }
-        printf( "Novo indice completo:\n" );
-        if( index_print( idx ) ) {
+           }
+           printf( "Novo indice completo:\n" );
+           if( index_print( idx ) ) {
                 fprintf( stderr, "Erro: impressao do novo indice\n" );
                 return 1;
-        }*/
+           }*/
         return 0;
 }
