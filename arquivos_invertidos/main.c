@@ -12,12 +12,31 @@ int main( int argc, char **argv ) {
                 fprintf( stderr, "Erro: criacao do indice\n" );
                 return 1;
         }
-        /*char keyword[17];
-        printf( "Qual a palavra-chave a procurar?\n" );
-        scanf( " %16[^\n]", keyword );
+
         int *occurrences;
         int n_occurrences;
+        char keyword[3] = {'b','y','\0'};
         if( index_get( idx, keyword, &occurrences, &n_occurrences ) )
+                fprintf( stderr, "Erro: palavra nao pertence ao indice\n" );
+        else {
+                if( n_occurrences <= 0 )
+                        printf( "Nao ha ocorrencias de %s\n", keyword );
+                else {
+                        printf( "%d ocorrencias de %s: ", n_occurrences, keyword );
+                        int i;
+                        for( i=0; i<n_occurrences-1; i++ )
+                                printf( "%d, ", occurrences[i] );
+                        printf( "%d\n", occurrences[n_occurrences-1] );
+                }
+        }
+
+
+        /*char keyword[17];
+           printf( "Qual a palavra-chave a procurar?\n" );
+           scanf( " %16[^\n]", keyword );
+           int *occurrences;
+           int n_occurrences;
+           if( index_get( idx, keyword, &occurrences, &n_occurrences ) )
                 fprintf( stderr, "Erro: palavra nao pertence ao indice\n" );
            else {
                 if( n_occurrences <= 0 )
