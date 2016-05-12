@@ -1,7 +1,11 @@
+//TODO
+  //  colocar a lista pra imprimir em ordem alfabetica
+//TODO
+
+
 /**
    *@author Jonatan Souza
  */
-
 #include "index.h"
 
 #define MAX_WORD_SIZE 17;
@@ -13,17 +17,12 @@ struct index {
         struct index* next;
 };
 
-typedef struct found {
-        int *occurrences;
-        int n;
-}Found;
-
-
-
 //AUXILIAR FUNCTIONS
 static int hash(const char *key);
 int getKeyWordsFromFile(const char* keys, const char* text, Index **idx);
 Idx* checkOccurrencesOnText(const char *key, FILE *fp);
+int validateSearch(int n, char* text);
+int setLowerCase(int c);
 //AUXILIAR FUNCTIONS
 
 
@@ -42,10 +41,10 @@ int index_createfrom(const char *key_file, const char *text_file, Index **idx){
 int index_get( const Index *idx, const char *key, int **occurrences, int *num_occurrences ){
         Idx *node = (*idx)[hash(key)];
         if(node == NULL) {
-            return 1;
+                return 1;
         }else{
-            (*occurrences) = node->value;
-            *num_occurrences = node->n;
+                (*occurrences) = node->value;
+                *num_occurrences = node->n;
         }
 
         return 0;
@@ -57,8 +56,32 @@ int index_put( Index *idx, const char *key ){
         return 0;
 }
 int index_print( const Index *idx ){
+        Idx *head = NULL, *list = NULL, *tmp = NULL;
+        int i;
+        for(i=0; i<M; i++) {
+                if((*idx)[i]!= NULL) {
+                        if(head == NULL) {
+                                head = (*idx)[i];
+                                list = (*idx)[i];
+                        }else{
+                                while (list->next != NULL)
+                                        list = list->next;
 
-        //TODO
+                                list->next = (*idx)[i];
+                        }
+                }
+
+
+        tmp = head;
+      }
+        while(tmp != NULL) {
+                char occurrences[tmp->n];
+                printf("%s: ", tmp->key);
+                for(i = 0; i < (tmp->n-1); i++)
+                        printf("%d, ", tmp->value[i]);
+                printf("%d\n", tmp->value[tmp->n-1]);
+                tmp = tmp->next;
+        }
         return 0;
 }
 
@@ -101,7 +124,8 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
                                 if((**idx)[hash(str)] == NULL) {
                                         (**idx)[hash(str)] = node;
                                 }else{
-                                        printf("tratar colisao de hash!\n");
+                                        node->next = (**idx)[hash(str)]->next;
+                                        (**idx)[hash(str)]->next = node;
                                 }
                         }
                 } else if(wordSizeControl < 16) {
@@ -113,25 +137,43 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
         return 0;
 }
 
+int validateSearch(int n, char* text){
+        if(text[-1] < 'A'  ||  text[-1] > 'z')
+                if (text[n] < 'A'  ||  text[n] > 'z')
+                        return 1;
+        return 0;
+}
+
+int setLowerCase(int c){
+        if ((c >= 'A') && (c <= 'Z'))
+                c = c + 32;
+        return c;
+}
+
 Idx* checkOccurrencesOnText(const char *key, FILE *fp){
         Idx *node;
         int *val = NULL;
         int c, line = 1, lineDelimiter = 0, occurrences = 0;
         char text[120];
-        while ((c = fgetc(fp)) != EOF) {
+        char *position;
+        while ((c = setLowerCase(fgetc(fp))) != EOF) {
                 if(c == '\n') {
                         text[lineDelimiter] = '\0';
-                        if(strstr(text, key) != NULL) {
-                                if(val == NULL) {
-                                        val = malloc(sizeof(int));
-                                }else{
-                                        if(realloc(val, (occurrences+1)*sizeof(int)) == NULL){
-                                            printf("memoria cheia\n");
+                        position = strstr(text, key);
+                        if(position != NULL) {
+                                if(validateSearch((int)strlen(key), position)) {
+                                        if(val == NULL) {
+                                                val = malloc(sizeof(int));
+                                        }else{
+                                                if(realloc(val, (occurrences+1)*sizeof(int)) == NULL) {
+                                                        printf("memoria cheia\n");
+                                                }
                                         }
+                                        val[occurrences] = line;
+                                        occurrences++;
                                 }
-                                val[occurrences] = line;
-                                occurrences++;
                         }
+                        position = NULL;
                         lineDelimiter = 0;
                         line++;
                 }else{
