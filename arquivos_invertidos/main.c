@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "index.h"
+
 int main( int argc, char **argv ) {
         if( argc < 3 ) {
                 fprintf( stderr, "Erro: numero insuficiente de parametros:\n" );
@@ -12,6 +13,7 @@ int main( int argc, char **argv ) {
                 fprintf( stderr, "Erro: criacao do indice\n" );
                 return 1;
         }
+
         char keyword[17];
         printf( "Qual a palavra-chave a procurar?\n" );
         scanf( " %16[^\n]", keyword );
@@ -30,11 +32,13 @@ int main( int argc, char **argv ) {
                         printf( "%d\n", occurrences[n_occurrences-1] );
                 }
         }
+
         printf( "Indice completo:\n" );
         if( index_print( idx ) ) {
                 fprintf( stderr, "Erro: impressao do indice\n" );
                 return 1;
         }
+
         char new_keyword[17];
         printf( "Qual a palavra-chave a inserir?\n" );
         scanf( " %16[^\n]", new_keyword );

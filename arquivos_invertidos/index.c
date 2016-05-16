@@ -1,5 +1,5 @@
 //TODO
-  //  colocar a lista pra imprimir em ordem alfabetica
+//  colocar a lista pra imprimir em ordem alfabetica
 //TODO
 
 
@@ -10,11 +10,17 @@
 
 #define MAX_WORD_SIZE 17;
 
+//global variables
+char TEXT[50];
+Idx* ROOT = NULL;
+
 struct index {
         char key[17];
         int *value;
         int n;
         struct index* next;
+        struct index* listRight;
+        struct index* listLeft;
 };
 
 //AUXILIAR FUNCTIONS
@@ -23,14 +29,16 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx);
 Idx* checkOccurrencesOnText(const char *key, FILE *fp);
 int validateSearch(int n, char* text);
 int setLowerCase(int c);
+void pushLinkedList(Idx* list, Idx* node);
+
 //AUXILIAR FUNCTIONS
 
-
 int index_createfrom(const char *key_file, const char *text_file, Index **idx){
+        int i;
         (*idx) = malloc(sizeof(Index));
-        if((*idx) == NULL)
+        if((*idx) == NULL) {
                 return 1;
-
+        }
         if (getKeyWordsFromFile(key_file, text_file, idx)) {
                 return 1;
         }
@@ -39,52 +47,63 @@ int index_createfrom(const char *key_file, const char *text_file, Index **idx){
 }
 
 int index_get( const Index *idx, const char *key, int **occurrences, int *num_occurrences ){
-        Idx *node = (*idx)[hash(key)];
+        int addr = hash(key);
+        Idx *node = (*idx)[addr];
         if(node == NULL) {
                 return 1;
         }else{
-                (*occurrences) = node->value;
-                *num_occurrences = node->n;
+                do {
+                        if (!strcmp(node->key, key)) {
+                                (*occurrences) = node->value;
+                                *num_occurrences = node->n;
+                                return 0;
+                        }
+                        node = node->next;
+                } while(node->next != NULL);
         }
 
-        return 0;
+        return 1;
 }
 int index_put( Index *idx, const char *key ){
-        int address = hash(key);
-        if(idx[address] == NULL) {
+        Idx* node;
+        int addr = hash(key);
+        FILE *fp;
+        fp = fopen (TEXT,"r");
+        if (fp==NULL)
+        {
+                return 1;
         }
+        node = checkOccurrencesOnText(key, fp);
+        if(node == NULL) {
+                printf("nenhuma ocorrencia de %s no texto\n", key);
+        }else{
+                pushLinkedList(ROOT, node);
+                if((*idx)[addr] == NULL) {
+                        (*idx)[addr] = node;
+                }else{
+                        node->next = (*idx)[addr]->next;
+                        (*idx)[addr]->next = node;
+                }
+        }
+        fclose (fp);
         return 0;
 }
 int index_print( const Index *idx ){
+
         Idx *head = NULL, *list = NULL, *tmp = NULL;
         int i;
-        for(i=0; i<M; i++) {
-                if((*idx)[i]!= NULL) {
-                        if(head == NULL) {
-                                head = (*idx)[i];
-                                list = (*idx)[i];
-                        }else{
-                                while (list->next != NULL)
-                                        list = list->next;
-
-                                list->next = (*idx)[i];
-                        }
-                }
-
-
-        tmp = head;
-      }
+        tmp = ROOT;
         while(tmp != NULL) {
                 char occurrences[tmp->n];
                 printf("%s: ", tmp->key);
                 for(i = 0; i < (tmp->n-1); i++)
                         printf("%d, ", tmp->value[i]);
+
                 printf("%d\n", tmp->value[tmp->n-1]);
-                tmp = tmp->next;
+                tmp = tmp->listRight;
         }
         return 0;
 }
-
 
 //********************//
 // AUXILIAR FUNCTIONS //
@@ -113,6 +132,9 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
                 printf("Erro ao abrir o arquivo de texto\n");
                 return 1;
         }
+
+        strcpy(TEXT, text);
+
         while ((c = fgetc(fk)) != EOF) {
                 if (c == '\n') {
                         str[wordSizeControl] = '\0';
@@ -121,6 +143,15 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
                         if(node == NULL) {
                                 printf("nenhuma ocorrencia no texto da chave\n");
                         }else{
+
+                                if(ROOT == NULL) {
+                                        ROOT = node;
+                                        ROOT->listLeft = NULL;
+                                        ROOT->listRight = NULL;
+                                }else{
+                                        pushLinkedList(ROOT, node);
+                                }
+
                                 if((**idx)[hash(str)] == NULL) {
                                         (**idx)[hash(str)] = node;
                                 }else{
@@ -129,12 +160,46 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
                                 }
                         }
                 } else if(wordSizeControl < 16) {
-                        str[wordSizeControl++] = c;
+                        str[wordSizeControl++] = setLowerCase(c);
                 }
         }
         fclose(ft);
         fclose(fk);
         return 0;
+}
+
+void pushLinkedList(Idx* list, Idx* node){
+        Idx* aux;
+        while(list->listRight != NULL) {
+                if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
+                        if (list->listLeft == NULL) {
+                                ROOT = node;
+                        }
+                        aux = list->listLeft;
+                        list->listLeft = node;
+                        node->listRight = list;
+                        if(aux != NULL) {
+                                node->listLeft = aux;
+                                aux->listRight = node;
+                        }
+
+                        return;
+                }else if(strcmp(node->key, list->key) == strcmp(list->key, node->key)) {
+                        return;
+                }
+                list= list->listRight;
+        }
+
+        if (list->listLeft == NULL) {
+                ROOT = node;
+        }
+        aux = list->listLeft;
+        list->listLeft = node;
+        node->listRight = list;
+        if(aux != NULL) {
+                aux->listRight = node;
+                node->listLeft = aux;
+        }
 }
 
 int validateSearch(int n, char* text){
@@ -154,7 +219,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
         Idx *node;
         int *val = NULL;
         int c, line = 1, lineDelimiter = 0, occurrences = 0;
-        char text[120];
+        char text[10000];
         char *position;
         while ((c = setLowerCase(fgetc(fp))) != EOF) {
                 if(c == '\n') {
@@ -186,7 +251,11 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
                 node->n = occurrences;
                 strcpy(node->key, key);
                 node->next=NULL;
+                node->listRight = NULL;
+                node->listLeft = NULL;
+                rewind(fp);
+                return node;
         }
         rewind(fp);
-        return node;
+        return NULL;
 }
