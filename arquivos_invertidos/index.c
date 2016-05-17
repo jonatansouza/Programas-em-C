@@ -1,6 +1,5 @@
 //TODO
-//  esta colocando a primeira palavra por ultimo.. pq??
-
+//
 //TODO
 
 
@@ -12,7 +11,7 @@
 #define MAX_WORD_SIZE 17;
 
 //global variables
-char TEXT[50];
+char TEXT[TEXT_SIZE];
 Idx* ROOT = NULL;
 
 struct index {
@@ -30,6 +29,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp);
 int validateSearch(int n, char* text);
 int setLowerCase(int c);
 void pushLinkedList(Idx* list, Idx* node);
+void colisionHandler(Idx* list, Idx* node);
 
 //AUXILIAR FUNCTIONS
 
@@ -81,8 +81,7 @@ int index_put( Index *idx, const char *key ){
 		if((*idx)[addr] == NULL) {
 			(*idx)[addr] = node;
 		}else{
-			node->next = (*idx)[addr]->next;
-			(*idx)[addr]->next = node;
+			colisionHandler((*idx)[addr], node);
 		}
 	}
 	fclose (fp);
@@ -155,8 +154,7 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 				if((**idx)[hash(str)] == NULL) {
 					(**idx)[hash(str)] = node;
 				}else{
-					node->next = (**idx)[hash(str)]->next;
-					(**idx)[hash(str)]->next = node;
+					colisionHandler((**idx)[hash(str)], node);
 				}
 			}
 		} else if(wordSizeControl < 16) {
@@ -169,7 +167,15 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 }
 
 void pushLinkedList(Idx* list, Idx* node){
-	Idx* current;
+	Idx* current = list;
+	while(current != NULL) {
+		if(!strcmp(node->key, current->key)) {
+			printf("A palavra ja existe no indice, as informações estão sendo atualizadas\n");
+			return;
+		}
+		current = current->list;
+	}
+	current = list;
 	if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
 		ROOT = node;
 		node->list = list;
@@ -209,7 +215,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
 	Idx *node;
 	int *val = NULL;
 	int c, line = 1, lineDelimiter = 0, occurrences = 0;
-	char text[10000];
+	char text[MAX_TEXT_BUFFER];
 	char *position;
 	while ((c = setLowerCase(fgetc(fp))) != EOF) {
 		if(c == '\n') {
@@ -247,4 +253,20 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
 	}
 	rewind(fp);
 	return NULL;
+}
+
+void colisionHandler(Idx* list, Idx* node){
+	while(list->next != NULL) {
+		if(!strcmp(list->key, node->key)) {
+			list->value = node->value;
+			list->n = node->n;
+			return;
+		}
+		list = list->next;
+	}
+	if(!strcmp(list->key, node->key)) {
+		list->value = node->value;
+		return;
+	}
+	list->next = node;
 }
