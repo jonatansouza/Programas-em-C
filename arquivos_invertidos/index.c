@@ -20,8 +20,7 @@ struct index {
 	int *value;
 	int n;
 	struct index* next;
-	struct index* listRight;
-	struct index* listLeft;
+	struct index* list;
 };
 
 //AUXILIAR FUNCTIONS
@@ -100,9 +99,10 @@ int index_print( const Index *idx ){
 		for(i = 0; i < (tmp->n-1); i++)
 			printf("%d, ", tmp->value[i]);
 
-		printf("%d\n", tmp->value[tmp->n-1]);
-		tmp = tmp->listRight;
+		printf("%d.\n", tmp->value[tmp->n-1]);
+		tmp = tmp->list;
 	}
+
 	return 0;
 }
 
@@ -147,8 +147,7 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 
 				if(ROOT == NULL) {
 					ROOT = node;
-					ROOT->listLeft = NULL;
-					ROOT->listRight = NULL;
+					ROOT->list = NULL;
 				}else{
 					pushLinkedList(ROOT, node);
 				}
@@ -170,36 +169,26 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 }
 
 void pushLinkedList(Idx* list, Idx* node){
-	Idx* aux;
-	while(list->listRight != NULL) {
-		if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
-			if (list->listLeft == NULL) {
-				ROOT = node;
-			}
-			aux = list->listLeft;
-			list->listLeft = node;
-			node->listRight = list;
-			if(aux != NULL) {
-				node->listLeft = aux;
-				aux->listRight = node;
-			}
-
-			return;
-		}else if(strcmp(node->key, list->key) == strcmp(list->key, node->key)) {
-			return;
-		}
-		list= list->listRight;
-	}
-
-	if (list->listLeft == NULL) {
+	Idx* current;
+	if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
 		ROOT = node;
-	}
-	aux = list->listLeft;
-	list->listLeft = node;
-	node->listRight = list;
-	if(aux != NULL) {
-		aux->listRight = node;
-		node->listLeft = aux;
+		node->list = list;
+
+	} else{
+		current = list;
+		do {
+			current = list;
+			if(current->list == NULL) {
+				current->list = node;
+				break;
+			}
+			list = list->list;
+			if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
+				current->list = node;
+				node->list=list;
+				break;
+			}
+		} while(list != NULL);
 	}
 }
 
@@ -252,8 +241,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
 		node->n = occurrences;
 		strcpy(node->key, key);
 		node->next=NULL;
-		node->listRight = NULL;
-		node->listLeft = NULL;
+		node->list = NULL;
 		rewind(fp);
 		return node;
 	}

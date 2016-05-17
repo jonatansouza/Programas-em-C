@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -g
 
 all:main
 main:main.o index.o
