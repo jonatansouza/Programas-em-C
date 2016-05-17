@@ -1,8 +1,8 @@
-CC=gcc -g
+CC=gcc
 
 all:main
 main:main.o index.o
-	gcc -g -o main main.o index.o -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
+	$(CC) -o main main.o index.o -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
 list.o:index.c index.h
 	$(CC) -o index.o -c index.c -Wall
 main.o:main.c index.h
