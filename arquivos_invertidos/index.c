@@ -47,13 +47,24 @@ int index_createfrom(const char *key_file, const char *text_file, Index **idx){
 }
 
 int index_get( const Index *idx, const char *key, int **occurrences, int *num_occurrences ){
-	int addr = hash(key);
+	int i;
+	char k[17];
+
+	if(strlen(key) > 17) {
+		printf("A palavra %s possui mais de 16 chars\n", key);
+		return 1;
+	}
+
+	for(i=0; i<=strlen(key); i++ )
+		k[i] = setLowerCase(key[i]);
+
+	int addr = hash(k);
 	Idx *node = (*idx)[addr];
 	if(node == NULL) {
 		return 1;
 	}else{
 		do {
-			if (!strcmp(node->key, key)) {
+			if (!strcmp(node->key, k)) {
 				(*occurrences) = node->value;
 				*num_occurrences = node->n;
 				return 0;
@@ -66,14 +77,26 @@ int index_get( const Index *idx, const char *key, int **occurrences, int *num_oc
 }
 int index_put( Index *idx, const char *key ){
 	Idx* node;
-	int addr = hash(key);
+	int i;
+	char k[17];
+
+	if(strlen(key) > 17) {
+		printf("A palavra %s possui mais de 16 chars\n", key);
+		return 1;
+	}
+
+	for(i=0; i<=strlen(key); i++ )
+		k[i] = setLowerCase(key[i]);
+
+
+	int addr = hash(k);
 	FILE *fp;
 	fp = fopen (TEXT,"r");
 	if (fp==NULL)
 	{
 		return 1;
 	}
-	node = checkOccurrencesOnText(key, fp);
+	node = checkOccurrencesOnText(k, fp);
 	if(node == NULL) {
 		printf("nenhuma ocorrencia de %s no texto\n", key);
 	}else{
@@ -135,7 +158,7 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 
 	strcpy(TEXT, text);
 
-	while ((c = fgetc(fk)) != EOF) {
+	while ((c = setLowerCase(fgetc(fk))) != EOF) {
 		if (c == '\n') {
 			str[wordSizeControl] = '\0';
 			wordSizeControl = 0;
