@@ -7,6 +7,7 @@
 #define  M 100
 #define  TEXT_SIZE 100
 #define  MAX_TEXT_BUFFER 1024
+#define MAX_WORD_SIZE 17;
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,7 +16,6 @@
 struct index;
 typedef struct index Idx;
 typedef Idx* Index[M];
-
 
 int index_createfrom(const char *key_file, const char *text_file, Index **idx);
 int index_get( const Index *idx, const char *key, int **occurrences, int *num_occurrences );

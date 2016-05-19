@@ -1,18 +1,7 @@
-//TODO
-//
-//TODO
-
-
 /**
    *@author Jonatan Souza
  */
 #include "index.h"
-
-#define MAX_WORD_SIZE 17;
-
-//global variables
-char TEXT[TEXT_SIZE];
-Idx* ROOT = NULL;
 
 struct index {
 	char key[17];
@@ -22,7 +11,12 @@ struct index {
 	struct index* list;
 };
 
+//GLOBAL VARIABLES
+char TEXT[TEXT_SIZE];
+Idx* ROOT = NULL;
+
 //AUXILIAR FUNCTIONS
+
 static int hash(const char *key);
 int getKeyWordsFromFile(const char* keys, const char* text, Index **idx);
 Idx* checkOccurrencesOnText(const char *key, FILE *fp);
