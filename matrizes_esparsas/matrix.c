@@ -123,8 +123,7 @@ int matrix_destroy( Matrix* m ){
 
 int matrix_print( const Matrix* m ){
 	Matrix *aux = m->below;
-	printf("********** MATRIX %d X %d **********\n", m->line,
-	       m->column);
+	printf("%d %d\n", m->line, m->column);
 	while(aux != m) {
 		matrix_print_line(aux);
 		aux = aux->below;
@@ -265,9 +264,7 @@ void create_estructure(Matrix **m, int LINES, int COLUMNS){
 void matrix_print_line(Matrix *m){
 	Matrix *aux = m->right;
 	while(aux != m) {
-		printf("%d , ", aux->line);
-		printf("%d, ", aux->column);
-		printf("info %f\n", aux->info);
+		printf("%d %d %f \n", aux->line, aux->column, aux->info);
 		aux = aux->right;
 	}
 }
