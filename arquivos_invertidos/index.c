@@ -3,27 +3,29 @@
  */
 #include "index.h"
 
-struct index {
+struct node {
 	char key[17];
 	int *value;
 	int n;
-	struct index* next;
-	struct index* list;
+	struct node* next;
+	struct node* list;
 };
 
-//GLOBAL VARIABLES
-char TEXT[TEXT_SIZE];
-Idx* ROOT = NULL;
+struct index {
+	struct node *hashTable[M];
+	char *text;
+	Node *root;
+};
 
 //AUXILIAR FUNCTIONS
 
 static int hash(const char *key);
-int getKeyWordsFromFile(const char* keys, const char* text, Index **idx);
-Idx* checkOccurrencesOnText(const char *key, FILE *fp);
+int getKeyWordsFromFile(const char* keys, const char* text, Index *idx);
+Node* checkOccurrencesOnText(const char *key, FILE *fp);
 int validateSearch(int n, char* text);
 int setLowerCase(int c);
-void pushLinkedList(Idx* list, Idx* node);
-void colisionHandler(Idx* list, Idx* node);
+void pushLinkedList(Node* list, Node* node, Index *idx);
+void colisionHandler(Node* list, Node* node);
 
 //AUXILIAR FUNCTIONS
 
@@ -33,10 +35,11 @@ int index_createfrom(const char *key_file, const char *text_file, Index **idx){
 	if((*idx) == NULL) {
 		return 1;
 	}
-	if (getKeyWordsFromFile(key_file, text_file, idx)) {
+	if (getKeyWordsFromFile(key_file, text_file, (*idx))) {
 		return 1;
 	}
-
+	for(i=0; i<M; i++)
+		printf("%d -- %p\n", i, (*idx)->hashTable[i]);
 	return 0;
 }
 
@@ -53,7 +56,7 @@ int index_get( const Index *idx, const char *key, int **occurrences, int *num_oc
 		k[i] = setLowerCase(key[i]);
 
 	int addr = hash(k);
-	Idx *node = (*idx)[addr];
+	Node *node = idx->hashTable[addr];
 	if(node == NULL) {
 		return 1;
 	}else{
@@ -70,7 +73,7 @@ int index_get( const Index *idx, const char *key, int **occurrences, int *num_oc
 	return 1;
 }
 int index_put( Index *idx, const char *key ){
-	Idx* node;
+	Node* node;
 	int i;
 	char k[17];
 
@@ -85,7 +88,7 @@ int index_put( Index *idx, const char *key ){
 
 	int addr = hash(k);
 	FILE *fp;
-	fp = fopen (TEXT,"r");
+	fp = fopen (idx->text,"r");
 	if (fp==NULL)
 	{
 		return 1;
@@ -94,11 +97,11 @@ int index_put( Index *idx, const char *key ){
 	if(node == NULL) {
 		printf("nenhuma ocorrencia de %s no texto\n", key);
 	}else{
-		pushLinkedList(ROOT, node);
-		if((*idx)[addr] == NULL) {
-			(*idx)[addr] = node;
+		pushLinkedList(idx->root, node, idx);
+		if(idx->hashTable[addr] == NULL) {
+			idx->hashTable[addr] = node;
 		}else{
-			colisionHandler((*idx)[addr], node);
+			colisionHandler(idx->hashTable[addr], node);
 		}
 	}
 	fclose (fp);
@@ -106,9 +109,9 @@ int index_put( Index *idx, const char *key ){
 }
 int index_print( const Index *idx ){
 
-	Idx *head = NULL, *list = NULL, *tmp = NULL;
+	Node *head = NULL, *list = NULL, *tmp = NULL;
 	int i;
-	tmp = ROOT;
+	tmp = idx->root;
 	while(tmp != NULL) {
 		char occurrences[tmp->n];
 		printf("%s: ", tmp->key);
@@ -122,6 +125,7 @@ int index_print( const Index *idx ){
 	return 0;
 }
 
+
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
@@ -134,8 +138,8 @@ static int hash(const char *key){
 	return hash % M;
 }
 
-int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
-	Idx* node;
+int getKeyWordsFromFile(const char* keys, const char* text, Index *idx){
+	Node* node;
 	FILE *fk, *ft;
 	char str[17];
 	int c, wordSizeControl = 0;
@@ -150,8 +154,6 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 		return 1;
 	}
 
-	strcpy(TEXT, text);
-
 	while ((c = setLowerCase(fgetc(fk))) != EOF) {
 		if (c == '\n') {
 			str[wordSizeControl] = '\0';
@@ -160,18 +162,19 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 			if(node == NULL) {
 				printf("nenhuma ocorrencia no texto da chave\n");
 			}else{
-
-				if(ROOT == NULL) {
-					ROOT = node;
-					ROOT->list = NULL;
+				idx->text = (char*)malloc(strlen(text)* sizeof(char));
+				strcpy(idx->text, text);
+				if(idx->root == NULL) {
+					idx->root = node;
+					idx->root->list = NULL;
 				}else{
-					pushLinkedList(ROOT, node);
+					pushLinkedList(idx->root, node, idx);
 				}
 
-				if((**idx)[hash(str)] == NULL) {
-					(**idx)[hash(str)] = node;
+				if(idx->hashTable[hash(str)] == NULL) {
+					idx->hashTable[hash(str)] = node;
 				}else{
-					colisionHandler((**idx)[hash(str)], node);
+					colisionHandler(idx->hashTable[hash(str)], node);
 				}
 			}
 		} else if(wordSizeControl < 16) {
@@ -183,8 +186,8 @@ int getKeyWordsFromFile(const char* keys, const char* text, Index **idx){
 	return 0;
 }
 
-void pushLinkedList(Idx* list, Idx* node){
-	Idx* current = list;
+void pushLinkedList(Node* list, Node* node, Index *idx){
+	Node* current = list;
 	while(current != NULL) {
 		if(!strcmp(node->key, current->key)) {
 			printf("A palavra ja existe no indice, as informações estão sendo atualizadas\n");
@@ -194,7 +197,7 @@ void pushLinkedList(Idx* list, Idx* node){
 	}
 	current = list;
 	if(strcmp(node->key, list->key) < strcmp(list->key, node->key)) {
-		ROOT = node;
+		idx->root = node;
 		node->list = list;
 
 	} else{
@@ -228,8 +231,8 @@ int setLowerCase(int c){
 	return c;
 }
 
-Idx* checkOccurrencesOnText(const char *key, FILE *fp){
-	Idx *node;
+Node* checkOccurrencesOnText(const char *key, FILE *fp){
+	Node *node;
 	int *val = NULL;
 	int c, line = 1, lineDelimiter = 0, occurrences = 0;
 	char text[MAX_TEXT_BUFFER];
@@ -259,7 +262,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
 		}
 	}
 	if(val != NULL) {
-		node = malloc(sizeof(Idx));
+		node = malloc(sizeof(Node));
 		node->value = val;
 		node->n = occurrences;
 		strcpy(node->key, key);
@@ -272,7 +275,7 @@ Idx* checkOccurrencesOnText(const char *key, FILE *fp){
 	return NULL;
 }
 
-void colisionHandler(Idx* list, Idx* node){
+void colisionHandler(Node* list, Node* node){
 	while(list->next != NULL) {
 		if(!strcmp(list->key, node->key)) {
 			list->value = node->value;
