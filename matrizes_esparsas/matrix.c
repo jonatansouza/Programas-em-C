@@ -130,12 +130,38 @@ int matrix_print( const Matrix* m ){
 	}
 	printf("\n");
 }
+sumLine(Matrix *m, Matrix *n, Matrix *r){
+	Matrix *b = (Matrix*) n->below;
+	Matrix *bLine;
+	do {
+		bLine = b->right;
+		do {
+			if(bLine->line < m->line) {
+				insert_element(r, bLine->line, bLine->column, bLine->info);
+			}else if(bLine->line == m->line && bLine->column == m->column) {
+				insert_element(r, bLine->line, bLine->column, bLine->info+m->info);
+			}
+			bLine = bLine->right;
+		} while(bLine != b);
+		b = b->below;
+	} while(b != n);
+
+}
+
+void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop){
+	Matrix *aux = m;
+	while(aux != stop) {
+		insert_element(r, aux->line, aux->column, aux->info);
+		aux  = aux->right;
+	}
+}
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
-
+	Matrix *a = (Matrix*) m->below, *b = (Matrix*) n->below;
+	Matrix *aLine, *bLine;
 	float inputs[INPUT_MAX_SIZE];
 	int i, j, LINE, COLUMN, inputsSize = 0;
-	float infoA, infoB;
+	float info;
 	if(m->line != n->line || m->column != n->column)
 		return 1;
 
@@ -143,21 +169,55 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 	COLUMN = m->column;
 
 	create_estructure(r, LINE, COLUMN);
+
 	for(i=0; i<LINE; i++) {
-		for(j=0; j<COLUMN; j++) {
-			matrix_getelem(m, i+1, j+1, &infoA);
-			matrix_getelem(n, i+1, j+1, &infoB);
-			//printf("matrix %d,%d, %f\n",i+1, j+1, infoA);
-			if(infoA != 0 || infoB !=0) {
-				inputs[inputsSize++] = i+1;
-				inputs[inputsSize++] = j+1;
-				inputs[inputsSize++] = infoA+infoB;
+		if(a->right == a) {
+			if(b->right != b) {
+				fillLineSingle((*r),b->right, b);
+			}
+		}else{
+			if(b->right == b) {
+				fillLineSingle((*r), a->right, a);
+			}else{
+				aLine = a->right;
+				bLine = b->right;
+
+				while (aLine != a && bLine != b) {
+					if(aLine->column == bLine->column) {
+						insert_element((*r), aLine->line, aLine->column, aLine->info+bLine->info);
+						aLine = aLine->right;
+						bLine = bLine->right;
+					}else if(aLine->column < bLine->column) {
+						insert_element((*r), aLine->line, aLine->column, aLine->info);
+						aLine = aLine->right;
+
+					}else if(bLine->column < aLine->column) {
+						insert_element((*r), bLine->line, bLine->column, bLine->info);
+						bLine = bLine->right;
+					}
+					if(aLine->column <= 0) {
+						fillLineSingle((*r), bLine, b);
+						break;
+					}
+					if(bLine->column <= 0) {
+						fillLineSingle((*r), aLine, a);
+						break;
+					}
+				}
 			}
 		}
+		a = a->below;
+		b = b->below;
 	}
-	for(i=0; i<inputsSize/3; i++) {
-		insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
-	}
+/*    if(infoA != 0 || infoB !=0) {
+        inputs[inputsSize++] = i+1;
+        inputs[inputsSize++] = j+1;
+        inputs[inputsSize++] = infoA+infoB;
+    }
+
+    for(i=0; i<inputsSize/3; i++) {
+        insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
+    }*/
 	return 0;
 }
 
