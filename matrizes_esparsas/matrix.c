@@ -19,6 +19,7 @@ void create_estructure(Matrix **m, int LINES, int COLUMNS);
 void insert_element(Matrix *m, int line, int column, float info);
 void destroy_line(Matrix *m);
 void matrix_print_line(Matrix *m);
+void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop);
 //AUXILIAR FUNCTIONS
 
 
@@ -130,31 +131,6 @@ int matrix_print( const Matrix* m ){
 	}
 	printf("\n");
 }
-sumLine(Matrix *m, Matrix *n, Matrix *r){
-	Matrix *b = (Matrix*) n->below;
-	Matrix *bLine;
-	do {
-		bLine = b->right;
-		do {
-			if(bLine->line < m->line) {
-				insert_element(r, bLine->line, bLine->column, bLine->info);
-			}else if(bLine->line == m->line && bLine->column == m->column) {
-				insert_element(r, bLine->line, bLine->column, bLine->info+m->info);
-			}
-			bLine = bLine->right;
-		} while(bLine != b);
-		b = b->below;
-	} while(b != n);
-
-}
-
-void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop){
-	Matrix *aux = m;
-	while(aux != stop) {
-		insert_element(r, aux->line, aux->column, aux->info);
-		aux  = aux->right;
-	}
-}
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 	Matrix *a = (Matrix*) m->below, *b = (Matrix*) n->below;
@@ -209,15 +185,7 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 		a = a->below;
 		b = b->below;
 	}
-/*    if(infoA != 0 || infoB !=0) {
-        inputs[inputsSize++] = i+1;
-        inputs[inputsSize++] = j+1;
-        inputs[inputsSize++] = infoA+infoB;
-    }
 
-    for(i=0; i<inputsSize/3; i++) {
-        insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
-    }*/
 	return 0;
 }
 
@@ -257,29 +225,24 @@ int matrix_multiply( const Matrix* m, const Matrix* n, Matrix** r ){
 }
 
 int matrix_transpose( const Matrix* m, Matrix** r ){
-	float inputs[INPUT_MAX_SIZE];
-	int i, j, LINE, COLUMN, inputsSize = 0;
-	float info;
+	Matrix *a = m->below;
+	Matrix *aLine;
+	int i, LINE, COLUMN;
 
 	LINE = m->column;
 	COLUMN = m->line;
 
 	create_estructure(r, LINE, COLUMN);
 
-	for(i=0; i < COLUMN; i++) {
-		for(j=0; j<LINE; j++ ) {
-			matrix_getelem(m, i+1, j+1, &info);
-			if(info) {
-				inputs[inputsSize++] = j+1;
-				inputs[inputsSize++] = i+1;
-				inputs[inputsSize++] = info;
-			}
+	for(i=0; i<LINE; i++) {
+		aLine = a->right;
+		while(aLine != a) {
+			insert_element((*r), aLine->column, aLine->line, aLine->info);
+			aLine = aLine->right;
 		}
+		a = a->below;
 	}
 
-	for(i=0; i<inputsSize/3; i++) {
-		insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
-	}
 	return 0;
 
 }
@@ -287,6 +250,16 @@ int matrix_transpose( const Matrix* m, Matrix** r ){
 //********************//
 // AUXILIAR FUNCTIONS //
 //********************//
+
+
+void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop){
+	Matrix *aux = m;
+	while(aux != stop) {
+		insert_element(r, aux->line, aux->column, aux->info);
+		aux  = aux->right;
+	}
+}
+
 
 void create_estructure(Matrix **m, int LINES, int COLUMNS){
 	int i;

@@ -17,7 +17,7 @@ int main( void ) {
 		fprintf( stderr, "Erro na alocacao de B como listas encadeadas.\n" );
 		return 1;
 	}
-	printf("SOMA!!\n");
+
 	if ( !matrix_add( A, B, &C ) ) {
 		matrix_print( C );
 	}
