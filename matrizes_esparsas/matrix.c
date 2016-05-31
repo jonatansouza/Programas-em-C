@@ -16,10 +16,9 @@ struct matrix {
 
 //AUXILIAR FUNCTIONS
 void create_estructure(Matrix **m, int LINES, int COLUMNS);
-void insert_element(Matrix *m, int line, int column, float info);
+int insert_element(Matrix *m, int line, int column, float info);
 void destroy_line(Matrix *m);
 void matrix_print_line(Matrix *m);
-void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop);
 //AUXILIAR FUNCTIONS
 
 
@@ -40,13 +39,25 @@ int matrix_create(Matrix **m){
 	const int LINES =(int) matrixDescription[0];
 	const int COLUMNS =(int) matrixDescription[1];
 
+	if(LINES <= 0 || COLUMNS <= 0) {
+		printf("as linhas e colunas inseridas sao invalidas\n");
+		return 1;
+	}
 	float * matrixElements = matrixDescription+2;
 	const int matrixElementsSize = matrixDescriptionSize-2;
 
 	create_estructure(m, LINES, COLUMNS);
 
+	if(matrixElementsSize % 3 != 0) {
+		printf("Numero de parametros incompativel\n");
+		return 1;
+	}
+
 	for(i=0; i < (matrixElementsSize/3); i++)
-		insert_element((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], matrixElements[(i*3)+2]);
+		if(insert_element((*m), matrixElements[(i*3)],matrixElements[(i*3)+1], matrixElements[(i*3)+2])) {
+			printf("os elementos da matriz sao invalidos\n");
+			return 1;
+		}
 
 	return 0;
 }
@@ -223,16 +234,6 @@ int matrix_transpose( const Matrix* m, Matrix** r ){
 // AUXILIAR FUNCTIONS //
 //********************//
 
-
-void fillLineSingle(Matrix *r, Matrix* m, Matrix* stop){
-	Matrix *aux = m;
-	while(aux != stop) {
-		insert_element(r, aux->line, aux->column, aux->info);
-		aux  = aux->right;
-	}
-}
-
-
 void create_estructure(Matrix **m, int LINES, int COLUMNS){
 	int i;
 	//MasterHeadNode
@@ -274,10 +275,15 @@ void matrix_print_line(Matrix *m){
 	}
 }
 
-void insert_element(Matrix *m, int line, int column, float info){
+int insert_element(Matrix *m, int line, int column, float info){
 	Matrix *aux = m;
 	Matrix *ref;
 	int i;
+
+	if(line > m->line || column > m->column)
+		return 1;
+	if(line <= 0 || column <= 0)
+		return 1;
 
 //new node
 	Matrix *mNew = (Matrix *) malloc(sizeof(Matrix));
@@ -307,6 +313,8 @@ void insert_element(Matrix *m, int line, int column, float info){
 
 	mNew->below = aux->below;
 	aux->below = mNew;
+
+	return 0;
 }
 
 void destroy_line(Matrix *m){
