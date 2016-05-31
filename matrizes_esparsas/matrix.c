@@ -335,8 +335,6 @@ void insert_element(Matrix *m, int line, int column, float info){
 
 	mNew->below = aux->below;
 	aux->below = mNew;
-
-
 }
 
 void destroy_line(Matrix *m){
