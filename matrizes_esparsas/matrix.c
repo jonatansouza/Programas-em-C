@@ -133,11 +133,10 @@ int matrix_print( const Matrix* m ){
 }
 
 int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
-	Matrix *a = (Matrix*) m->below, *b = (Matrix*) n->below;
-	Matrix *aLine, *bLine;
+
 	float inputs[INPUT_MAX_SIZE];
 	int i, j, LINE, COLUMN, inputsSize = 0;
-	float info;
+	float infoA, infoB;
 	if(m->line != n->line || m->column != n->column)
 		return 1;
 
@@ -145,9 +144,7 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 	COLUMN = m->column;
 
 	create_estructure(r, LINE, COLUMN);
-
 	for(i=0; i<LINE; i++) {
-<<<<<<< HEAD
 		for(j=0; j<COLUMN; j++) {
 			matrix_getelem(m, i+1, j+1, &infoA);
 			matrix_getelem(n, i+1, j+1, &infoB);
@@ -155,47 +152,12 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 				inputs[inputsSize++] = i+1;
 				inputs[inputsSize++] = j+1;
 				inputs[inputsSize++] = infoA+infoB;
-=======
-		if(a->right == a) {
-			if(b->right != b) {
-				fillLineSingle((*r),b->right, b);
-			}
-		}else{
-			if(b->right == b) {
-				fillLineSingle((*r), a->right, a);
-			}else{
-				aLine = a->right;
-				bLine = b->right;
-
-				while (aLine != a && bLine != b) {
-					if(aLine->column == bLine->column) {
-						insert_element((*r), aLine->line, aLine->column, aLine->info+bLine->info);
-						aLine = aLine->right;
-						bLine = bLine->right;
-					}else if(aLine->column < bLine->column) {
-						insert_element((*r), aLine->line, aLine->column, aLine->info);
-						aLine = aLine->right;
-
-					}else if(bLine->column < aLine->column) {
-						insert_element((*r), bLine->line, bLine->column, bLine->info);
-						bLine = bLine->right;
-					}
-					if(aLine->column <= 0) {
-						fillLineSingle((*r), bLine, b);
-						break;
-					}
-					if(bLine->column <= 0) {
-						fillLineSingle((*r), aLine, a);
-						break;
-					}
-				}
->>>>>>> matrixImprove
 			}
 		}
-		a = a->below;
-		b = b->below;
 	}
-
+	for(i=0; i<inputsSize/3; i++) {
+		insert_element((*r), (int)inputs[i*3], (int)inputs[i*3+1], inputs[i*3+2]);
+	}
 	return 0;
 }
 
