@@ -147,7 +147,6 @@ int matrix_add( const Matrix* m, const Matrix* n, Matrix** r ){
 		for(j=0; j<COLUMN; j++) {
 			matrix_getelem(m, i+1, j+1, &infoA);
 			matrix_getelem(n, i+1, j+1, &infoB);
-			//printf("matrix %d,%d, %f\n",i+1, j+1, infoA);
 			if(infoA != 0 || infoB !=0) {
 				inputs[inputsSize++] = i+1;
 				inputs[inputsSize++] = j+1;
