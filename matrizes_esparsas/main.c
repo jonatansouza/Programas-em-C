@@ -17,6 +17,7 @@ int main( void ) {
 		fprintf( stderr, "Erro na alocacao de B como listas encadeadas.\n" );
 		return 1;
 	}
+
 	if ( !matrix_add( A, B, &C ) ) {
 		matrix_print( C );
 	}
