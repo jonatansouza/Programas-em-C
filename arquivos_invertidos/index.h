@@ -5,9 +5,6 @@
 #ifndef _Idx
 #define _Idx
 #define  M 100
-#define  TEXT_SIZE 100
-#define  MAX_TEXT_BUFFER 1024
-#define MAX_WORD_SIZE 17;
 
 #include <stdlib.h>
 #include <stdio.h>

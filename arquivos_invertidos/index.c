@@ -3,6 +3,10 @@
  */
 #include "index.h"
 
+#define  MAX_TEXT_BUFFER 1024
+#define MAX_WORD_SIZE 17;
+
+
 struct node {
 	char key[17];
 	int *value;
@@ -38,8 +42,6 @@ int index_createfrom(const char *key_file, const char *text_file, Index **idx){
 	if (getKeyWordsFromFile(key_file, text_file, (*idx))) {
 		return 1;
 	}
-	for(i=0; i<M; i++)
-		printf("%d -- %p\n", i, (*idx)->hashTable[i]);
 	return 0;
 }
 
