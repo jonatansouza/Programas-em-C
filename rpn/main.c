@@ -14,8 +14,13 @@ int main(int argc, char *argv[]){
         printf("O resultado da expressão é %5.2f\n", fResultado);
  */
 	/*Stack *calcRPN = NULL; */
+
+	char * result = malloc(sizeof(argv[1]));
+
 	printf("RPN CALCULATOR!\n");
-	rpnDecode(argv[1]);
+	rpnCollect(argv[1], result);
+	/*rpnDecode(argv[1]);*/
+
 
 	return 0;
 }

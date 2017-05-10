@@ -43,6 +43,7 @@ int stackDestroy(Stack **s){
 
 void printStack(Stack *s){
 	Stack *aux = NULL;
+	printf("********TOPO V********************************\n");
 	if(s == NULL) {
 		printf("Empty Stack\n");
 		return;
@@ -50,4 +51,6 @@ void printStack(Stack *s){
 	for(aux = s; aux != NULL; aux = aux->next) {
 		printf("%f \n", aux->value);
 	}
+	printf("****************************************\n");
+
 }

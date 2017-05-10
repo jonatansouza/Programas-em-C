@@ -7,6 +7,9 @@
  **/
 
 double rpnResolve(double x1, double x2, char op);
+void concatRpnPostfix(char *postfix, double val);
+void insertSpaceRpnPostfix(char *postfix);
+int rpnConvert(Queue **digits, QueueC **operators);
 
 /**
         AUXILIAR FUNCTIONS
@@ -15,8 +18,8 @@ double rpnResolve(double x1, double x2, char op);
 
 int isOperator(char input){
 	int i = 0;
-	char options[4] = {'+', '-', '*', '/'};
-	for (i = 0; i < 4; i++) {
+	char options[5] = {'+', '-', '*', '/', ')'};
+	for (i = 0; i < 5; i++) {
 		if(input == options[i]) {
 			return 1;
 		}
@@ -25,7 +28,6 @@ int isOperator(char input){
 }
 
 int isDigit(char input){
-
 	if(input > 47 && input < 58) {
 		return 1;
 	}
@@ -34,6 +36,78 @@ int isDigit(char input){
 
 int isUnary(char input){
 	return 0;
+}
+
+int operatorPriority(char operator){
+	switch (operator) {
+	case '+':
+		return 1;
+	case '-':
+		return 1;
+	case '*':
+		return 2;
+	case '/':
+		return 2;
+	case ')':
+		return 4;
+	default:
+		return -1;
+	}
+}
+
+int rpnCollect(char *infix, char *postfix){
+	int i=0;
+	char * aft;
+	Queue *q = NULL;
+	QueueC *oq = NULL;
+	printf("Colecting infix -> %s to postfix\n", infix );
+
+	while ( i < strlen(infix)) {
+		if(isDigit(infix[i])) {
+			queue(&q, strtod(&infix[i], &aft));
+			i = (aft - infix);
+			continue;
+		}else if(isOperator(infix[i])) {
+			queueC(&oq, (char)infix[i]);
+		}
+		i++;
+	}
+	rpnConvert(&q, &oq);
+	return 0;
+}
+/**
+   TODO ALGORITMO PARA dequeue
+ */
+int rpnConvert(Queue **digits, QueueC **operators){
+	char postfix[256];
+	char c = 'a', ant = 'a';
+	double val1, val2;
+	postfix[0] = '\0';
+	dequeueC(operators, &ant);
+	while (dequeueC(operators, &c)) {
+		if(operatorPriority(ant) >= operatorPriority(c)) {
+
+		}else{
+
+		}
+		ant = c;
+	}
+	return 0;
+}
+
+void insertSpaceRpnPostfix(char *postfix){
+	postfix[strlen(postfix)+1] = ' ';
+	postfix[strlen(postfix)+2] = '\0';
+}
+/**
+ * Concat Double values on string
+ */
+void concatRpnPostfix(char *postfix, double val){
+	char *stringVal = malloc(4);
+	sprintf(stringVal,"%f",val);
+	strcat(postfix, " ");
+	strcat(postfix, stringVal);
+	strcat(postfix, " ");
 }
 
 int rpnDecode(char *input){
