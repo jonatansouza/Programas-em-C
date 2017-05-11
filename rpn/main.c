@@ -15,7 +15,8 @@ int main(int argc, char *argv[]){
  */
 	/*Stack *calcRPN = NULL; */
 
-	char * result = malloc(sizeof(argv[1]));
+	char result[256];
+	result[0] = '\0';
 
 	printf("RPN CALCULATOR!\n");
 	rpnCollect(argv[1], result);

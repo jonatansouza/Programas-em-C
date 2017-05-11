@@ -9,7 +9,7 @@
 double rpnResolve(double x1, double x2, char op);
 void concatRpnPostfix(char *postfix, double val);
 void insertSpaceRpnPostfix(char *postfix);
-int rpnConvert(Queue **digits, QueueC **operators);
+int rpnConvert(Queue **digits, QueueC **operators, char *postfix);
 
 /**
         AUXILIAR FUNCTIONS
@@ -40,6 +40,8 @@ int isUnary(char input){
 
 int operatorPriority(char operator){
 	switch (operator) {
+	case '#':
+		return 0;
 	case '+':
 		return 1;
 	case '-':
@@ -72,23 +74,32 @@ int rpnCollect(char *infix, char *postfix){
 		}
 		i++;
 	}
-	rpnConvert(&q, &oq);
+	queueC(&oq, '#');
+	rpnConvert(&q, &oq, postfix);
 	return 0;
 }
-/**
-   TODO ALGORITMO PARA dequeue
- */
-int rpnConvert(Queue **digits, QueueC **operators){
-	char postfix[256];
+int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 	char c = 'a', ant = 'a';
-	double val1, val2;
-	postfix[0] = '\0';
+	char ops[10];
+	int opCount=1, i=0, waiting = 0;
+	double val;
 	dequeueC(operators, &ant);
 	while (dequeueC(operators, &c)) {
 		if(operatorPriority(ant) >= operatorPriority(c)) {
-
+			for(i=0; i<=opCount; i++) {
+				dequeue(digits, &val);
+				printf("%5.2f\n", val);
+			}
+			printf("%c\n", ant);
+			if(waiting) {
+				for(i=0; i<waiting; i++)
+					printf("%c\n", ops[i]);
+			}
+			waiting = 0;
+			opCount = 0;
 		}else{
-
+			opCount++;
+			ops[waiting++] = ant;
 		}
 		ant = c;
 	}
@@ -103,11 +114,10 @@ void insertSpaceRpnPostfix(char *postfix){
  * Concat Double values on string
  */
 void concatRpnPostfix(char *postfix, double val){
-	char *stringVal = malloc(4);
-	sprintf(stringVal,"%f",val);
+	char *stringVal = malloc(sizeof(char) * 6);
+	sprintf(stringVal,"%5.2f",val);
 	strcat(postfix, " ");
 	strcat(postfix, stringVal);
-	strcat(postfix, " ");
 }
 
 int rpnDecode(char *input){
