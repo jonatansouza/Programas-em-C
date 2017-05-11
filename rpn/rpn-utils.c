@@ -100,7 +100,7 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 				if(ant != ')' && ant != '(')
 					printf("%c\n", ant);
 				if(waiting) {
-					for(i=0; i<waiting; i++)
+					for(i=waiting-1; i>=0; i--)
 						printf("%c\n", ops[i]);
 				}
 				waiting = 0;
