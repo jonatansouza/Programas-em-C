@@ -22,6 +22,5 @@ int main(int argc, char *argv[]){
 	rpnCollect(argv[1], result);
 	/*rpnDecode(argv[1]);*/
 
-
 	return 0;
 }

@@ -18,8 +18,8 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix);
 
 int isOperator(char input){
 	int i = 0;
-	char options[5] = {'+', '-', '*', '/', ')'};
-	for (i = 0; i < 5; i++) {
+	char options[7] = {'+', '-', '*', '/', '(', ')', 's'};
+	for (i = 0; i < 7; i++) {
 		if(input == options[i]) {
 			return 1;
 		}
@@ -47,8 +47,13 @@ int operatorPriority(char operator){
 		return 2;
 	case '/':
 		return 2;
+	case 's':
+		return 0;
 	case ')':
 		return 0;
+	case '(':
+		return 3;
+
 	default:
 		return -1;
 	}
@@ -67,6 +72,10 @@ int rpnCollect(char *infix, char *postfix){
 			i = (aft - infix);
 			continue;
 		}else if(isOperator(infix[i])) {
+			if(infix[i] == 's' && infix[i+3] != 't') {
+				printf("Bad operator! Use \'sqrt\'\n");
+				return 1;
+			}
 			queueC(&oq, (char)infix[i]);
 		}
 		i++;
@@ -83,20 +92,22 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 	dequeueC(operators, &ant);
 	while (dequeueC(operators, &c)) {
 		if(operatorPriority(ant) >= operatorPriority(c)) {
-			for(i=0; i<=opCount; i++) {
-				dequeue(digits, &val);
-				printf("%5.2f\n", val);
+			if(ant != ')' && ant != '(' ) {
+				for(i=0; i<=opCount; i++) {
+					dequeue(digits, &val);
+					printf("%5.2f\n", val);
+				}
+				if(ant != ')' && ant != '(')
+					printf("%c\n", ant);
+				if(waiting) {
+					for(i=0; i<waiting; i++)
+						printf("%c\n", ops[i]);
+				}
+				waiting = 0;
+				opCount = 0;
 			}
-			if(ant != ')')
-				printf("%c\n", ant);
-			if(waiting) {
-				for(i=0; i<waiting; i++)
-					printf("%c\n", ops[i]);
-			}
-			waiting = 0;
-			opCount = 0;
 		}else{
-			if(ant != ')') {
+			if(ant != ')' && ant != '(' ) {
 				opCount++;
 				ops[waiting++] = ant;
 			}
