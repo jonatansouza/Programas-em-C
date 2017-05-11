@@ -34,14 +34,11 @@ int isDigit(char input){
 	return 0;
 }
 
-int isUnary(char input){
-	return 0;
-}
 
 int operatorPriority(char operator){
 	switch (operator) {
 	case '#':
-		return 0;
+		return -10;
 	case '+':
 		return 1;
 	case '-':
@@ -51,7 +48,7 @@ int operatorPriority(char operator){
 	case '/':
 		return 2;
 	case ')':
-		return 4;
+		return 0;
 	default:
 		return -1;
 	}
@@ -90,7 +87,8 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 				dequeue(digits, &val);
 				printf("%5.2f\n", val);
 			}
-			printf("%c\n", ant);
+			if(ant != ')')
+				printf("%c\n", ant);
 			if(waiting) {
 				for(i=0; i<waiting; i++)
 					printf("%c\n", ops[i]);
@@ -98,8 +96,10 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 			waiting = 0;
 			opCount = 0;
 		}else{
-			opCount++;
-			ops[waiting++] = ant;
+			if(ant != ')') {
+				opCount++;
+				ops[waiting++] = ant;
+			}
 		}
 		ant = c;
 	}
