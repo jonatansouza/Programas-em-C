@@ -108,7 +108,9 @@ int rpnConvert(Queue **digits, QueueC **operators, char *postfix){
 			}
 		}else{
 			if(ant != ')' && ant != '(' ) {
-				opCount++;
+				if (ant != 's') {
+					opCount++;
+				}
 				ops[waiting++] = ant;
 			}
 		}
