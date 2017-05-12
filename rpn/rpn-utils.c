@@ -7,8 +7,6 @@
  **/
 
 double rpnResolve(double x1, double x2, char op);
-void insertSpaceRpnPostfix(char *postfix);
-int rpnConvert(Queue **digits, QueueC **operators, char *postfix);
 void concatRpnPostfix(char *postfix, char operator);
 /**
         AUXILIAR FUNCTIONS
@@ -27,10 +25,11 @@ int isOperator(char input){
 }
 
 int isDigit(char input){
-	if(input > 47 && input < 58) {
-		return 1;
-	}
-	return 0;
+	return (input > 47 && input < 58) ? 1 : 0;
+}
+
+int isUnary(char a, char b){
+	return (isDigit(a) && b == '-') ? 1 : 0;
 }
 
 
@@ -52,7 +51,6 @@ int operatorPriority(char operator){
 		return 0;
 	case '(':
 		return 4;
-
 	default:
 		return -1;
 	}
@@ -67,19 +65,19 @@ int rpnCollect(char *infix, char *postfix){
 
 	while ( i < strlen(infix)) {
 		if(isDigit(infix[i])) {
-			sprintf(subs, "%5.2f", strtod(&infix[i], &aft));
+			sprintf(subs, "%5.2f", strtod(&infix[i > 0 ? (i-1) : i], &aft));
 			strcat(postfix, subs);
 			strcat(postfix, " ");
 			i = (aft - infix);
 			continue;
-		}else if(isOperator(infix[i])) {
+		}else if(isOperator(infix[i]) && !isUnary(infix[i+1], infix[i])) {
 			if(infix[i] == 's' && infix[i+3] != 't') {
 				printf("Bad operator! Use \'sqrt\'\n");
 				return 1;
 			}else{
 				if (getTop(ops, &operator)) {
 					if(operatorPriority(operator) >= operatorPriority(infix[i]) && operator != '(') {
-						while (operatorPriority(operator) > operatorPriority(infix[i])) {
+						while (operatorPriority(operator) >= operatorPriority(infix[i])) {
 							if(!popc(&ops, &operator) || operator == '(') {
 								break;
 							}
