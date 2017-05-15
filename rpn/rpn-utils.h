@@ -1,7 +1,6 @@
 /**
 *@author Jonatan Souza
 */
-
 #ifndef _RpnUtils
 #define _RpnUtils
 
@@ -13,11 +12,9 @@
 
 
 
-int isOperator(char input);
-int isDigit(char input);
-int rpnDecode(char *input);
-int rpnCollect(char *infix, char *postfix);
-int operatorPriority(char operator);
 
+int rpnCalc(char *input, double *result);
+int rpnParse(char *infix, char *postfix);
+int rpnPrint(char * rpnString);
 
 #endif

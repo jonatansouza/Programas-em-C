@@ -1,7 +1,6 @@
 /**
 *@author Jonatan Souza
 */
-
 #ifndef _Stack
 #define _Stack
 
@@ -27,7 +26,7 @@ typedef struct _stackc Stackc;
 void printStackc(Stackc *s);
 int pushc(Stackc **s, char value);
 int popc(Stackc **s, char *value);
-int getTop(Stackc *s, char *value);
+int pickTop(Stackc *s, char *value);
 int stackDestroyc(Stackc **s);
 
 #endif
