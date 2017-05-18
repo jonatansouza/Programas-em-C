@@ -4,12 +4,19 @@
 
 #ifndef _Matrix
 #define _Matrix
+#define INPUT_MAX_SIZE 1000
+#define ACCURACY 0.0001
+#define POLLUTANT 200
 
 #include <stdlib.h>
 #include <stdio.h>
 
 struct matrix;
 typedef struct matrix Matrix;
+
+struct node;
+typedef struct node Node;
+
 
 int PSRegister(Matrix **mtx, char *filename);
 int PSCompute(Matrix *mtx);

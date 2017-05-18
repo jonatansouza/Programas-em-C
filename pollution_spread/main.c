@@ -6,6 +6,13 @@
 int main(int argc, char const *argv[]) {
 	Matrix *m = NULL;
 	char input[BUFFER_SIZE];
+
+	printf("*******************************\n" );
+	printf("*                             *\n" );
+	printf("* POLLUTION SPREAD CALCULATOR *\n" );
+	printf("*                             *\n" );
+	printf("*******************************\n" );
+
 	/**
 	 * Check the user insert the file path from args
 	 */
@@ -18,9 +25,10 @@ int main(int argc, char const *argv[]) {
 		input[strlen(input)-1] = '\0'; /** remove extra return */
 	}
 
-	if(PSRegister(&m, input))
+	if(PSRegister(&m, input)) {
 		PSCompute(m);
+		PSMatrixDestroy(m);
+	}
 
-	PSMatrixDestroy(m);
 	return 0;
 }

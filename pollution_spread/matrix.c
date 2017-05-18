@@ -4,20 +4,27 @@
 
 #include "matrix.h"
 
-#define INPUT_MAX_SIZE 1000
+struct node {
+	int type;
+	double value;
+};
 
 struct matrix {
 	char * filename;
 	int rows;
 	int cols;
-	double **matrix;
+	Node *nodes;
 };
+
 /**
  * AUXILIAR FUNCTIONS
  */
 
 int PSCopyMatrix(Matrix *a, Matrix **b);
-
+double PSPoiseCheck(Matrix *a, Matrix *b);
+double PSModule(double value);
+double PSConvertPercent(double value);
+double PSCheckNeighbors(Matrix *m,int i,int j);
 /**
  * AUXILIAR FUNCTIONS
  * END
@@ -37,16 +44,20 @@ int PSRegister(Matrix **mtx, char *filename){
 		return 0;
 	}
 	fscanf(fp, "%d %d", &m->rows, &m->cols);
-	m->matrix = (double **) malloc(m->rows * sizeof(double *));
-	for(i = 0; i < m->cols; i++) {
-		m->matrix[i] = (double *) malloc(m->cols * sizeof(double));
-	}
-
+	m->nodes = (Node *) malloc(m->rows * m->cols * sizeof(Node));
 	for (i = 0; i < m->rows; i++) {
 		for (j = 0; j < m->cols; j++) {
-			if((fscanf(fp, "%lf", &m->matrix[i][j])) < 1) {
+			if((fscanf(fp, "%d", &m->nodes[i*m->cols+j].type)) < 1) {
 				printf("Arquivo com dados incorretos!\n" );
 				return 0;
+			}else if(m->nodes[i*m->cols+j].type < 0 || m->nodes[i*m->cols+j].type > 2) {
+				printf("Arquivo com dados incorretos, [0 1 2] valores permitidos!\n" );
+				return 0;
+			}
+			if(m->nodes[i*m->cols+j].type == 2) {
+				m->nodes[i*m->cols+j].value = POLLUTANT;
+			}else{
+				m->nodes[i*m->cols+j].value = 0;
 			}
 		}
 	}
@@ -58,20 +69,45 @@ int PSRegister(Matrix **mtx, char *filename){
  * Compute the pollution spread
  */
 int PSCompute(Matrix *mtx){
-	int i=0, j=0;
-	Matrix *aux = NULL;
-	for (i = 0; i < mtx->rows; i++) {
-		for (j = 0; j < mtx->cols; j++) {
-			if (mtx->matrix[i][j] == 2) {
-				printf("Fonte de poluente encontrada! em %d %d\n", i, j);
+	int i=0, j=0, count=0;
+	int rows = mtx->rows;
+	int cols = mtx->cols;
+	Matrix * aux = NULL, * mtxcpy = NULL;
+	if(!PSCopyMatrix(mtx, &mtxcpy)) {
+		printf("Erro ao alocar matriz auxiliar\n");
+		return 0;
+	}
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < cols; j++) {
+			if (mtx->nodes[i*cols+j].type == 2) {
+				count++;
 			}
 		}
 	}
-
-	if(!PSCopyMatrix(mtx, &aux)) {
-		printf("Erro na criação da matrix auxiliar\n" );
+	if (count == 0) {
+		printf("Nenhum fonte de poluente encontrada\n" );
+		return 1;
 	}
-	PSMatrixDestroy(aux);
+	printf("%d Fontes de poluente encontradas\n", count);
+	count = 0;
+	do {
+		aux = mtx;
+		mtx = mtxcpy;
+		mtxcpy = aux;
+		for (i = 0; i < rows; i++) {
+			for (j = 0; j < cols; j++) {
+				if(mtxcpy->nodes[i*cols+j].type == 1)
+					mtxcpy->nodes[i*cols+j].value = PSCheckNeighbors(mtx, i, j);
+			}
+		}
+		count++;
+	} while(PSPoiseCheck(mtxcpy, mtx) >= ACCURACY);
+	printf("Calculo concluido com  %d iterações \n",count);
+	PSPrint(mtxcpy);
+
+
+	/* PSMatrixDestroy(aux); */
+
 	return 1;
 }
 /**
@@ -79,9 +115,16 @@ int PSCompute(Matrix *mtx){
  */
 int PSPrint(Matrix *mtx){
 	int i=0, j=0;
+	Node *node = mtx->nodes;
 	for (i = 0; i < mtx->rows; i++) {
 		for (j = 0; j < mtx->cols; j++) {
-			printf("%1.0f ", mtx->matrix[i][j]);
+			if(node[i*mtx->cols+j].type == 0)
+				printf("\x1B[34m");
+			if(node[i*mtx->cols+j].type == 1)
+				printf("\x1B[32m");
+			if(node[i*mtx->cols+j].type == 2)
+				printf("\x1B[31m");
+			printf("| %3.5f |", node[i*mtx->cols+j].value);
 		}
 		printf("\n" );
 	}
@@ -92,11 +135,7 @@ int PSPrint(Matrix *mtx){
  * Release all memory allocated
  */
 int PSMatrixDestroy(Matrix *mtx){
-	int i = 0;
-	for(i = 0; i < mtx->cols; i++) {
-		free(mtx->matrix[i]);
-	}
-	free(mtx->matrix);
+	free(mtx->nodes);
 	free(mtx);
 	return 1;
 }
@@ -106,6 +145,59 @@ int PSMatrixDestroy(Matrix *mtx){
  */
 
 /**
+ * verify if position required is inside the array limits
+ */
+int PSCheckNodeLimits(int limits, int current){
+	return current > limits || current < 0 ? 0 : 1;
+}
+/**
+ * return a value
+ */
+double PSReturnNodeValue(Matrix * m, int position){
+	return (PSCheckNodeLimits(m->rows*m->cols, position)) ? m->nodes[position].value : 0;
+}
+
+
+/**
+ *
+ */
+double PSCheckNeighbors(Matrix *m,int i,int j){
+	int cols = m->cols;
+	double teste = PSReturnNodeValue(m, ((i-1)*cols+j)) + PSReturnNodeValue(m,((i+1)*cols+j)) + PSReturnNodeValue(m,(i*cols+(j-1))) + PSReturnNodeValue(m,(i*cols+(j+1)));
+	return teste / 4;
+}
+
+/**
+ * Convert the values to percent values
+ */
+
+double PSConvertPercent(double value){
+	return (value - 1) * 100;
+}
+/**
+ * Check the residual value between matrix and return it
+ */
+double PSPoiseCheck(Matrix *a, Matrix *b){
+	int i = 0, j = 0;
+	int locate[2] = {0, 0};
+	double deltaMax = 0;
+	for (i = 0; i < a->rows; i++) {
+		for (j = 0; j < a->cols; j++) {
+			if ((a->nodes[i*a->cols+j].value - b->nodes[i*a->cols+j].value) > deltaMax) {
+				deltaMax = (a->nodes[i*a->cols+j].value - b->nodes[i*a->cols+j].value);
+				locate[0] = i;
+				locate[1] = j;
+			}
+		}
+	}
+	return PSModule(deltaMax / b->nodes[locate[0]*a->cols+locate[1]].value);
+}
+
+double PSModule(double value){
+	return value < 0 ? value * (-1) : value;
+}
+
+/**
  * copy all data from matrix a -> b and allocate memory
  */
 int PSCopyMatrix(Matrix *a, Matrix **b){
@@ -113,13 +205,11 @@ int PSCopyMatrix(Matrix *a, Matrix **b){
 	(*b) = (Matrix *) malloc(sizeof(Matrix));
 	(*b)->rows = a->rows;
 	(*b)->cols = a->cols;
-	(*b)->matrix = (double **) malloc((*b)->rows * sizeof(double *));
-	for(i = 0; i < (*b)->cols; i++) {
-		(*b)->matrix[i] = (double *) malloc((*b)->cols * sizeof(double));
-	}
-	for (i = 0; i < (*b)->rows; i++) {
-		for (j = 0; j < (*b)->cols; j++) {
-			(*b)->matrix[i][j] = a->matrix[i][j];
+	(*b)->filename = a->filename;
+	(*b)->nodes = (Node *) malloc(a->rows * a->cols * sizeof(Node));
+	for (i = 0; i < a->rows; i++) {
+		for (j = 0; j < a->cols; j++) {
+			(*b)->nodes[i*a->cols+j] = a->nodes[i*a->cols+j];
 		}
 	}
 	return 1;
