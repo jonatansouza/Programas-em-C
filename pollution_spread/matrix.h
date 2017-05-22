@@ -5,7 +5,7 @@
 #ifndef _Matrix
 #define _Matrix
 #define INPUT_MAX_SIZE 1000
-#define ACCURACY 0.0001
+#define ACCURACY 1e-5
 #define POLLUTANT 200
 
 #include <stdlib.h>

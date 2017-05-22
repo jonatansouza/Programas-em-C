@@ -124,7 +124,7 @@ int PSPrint(Matrix *mtx){
 				printf("\x1B[32m");
 			if(node[i*mtx->cols+j].type == 2)
 				printf("\x1B[31m");
-			printf("| %3.5f |", node[i*mtx->cols+j].value);
+			printf("%5.1f ", node[i*mtx->cols+j].value);
 		}
 		printf("\n" );
 	}
