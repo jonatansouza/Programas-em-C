@@ -269,7 +269,7 @@ void printNode2(Node *n, int d){
 	printNode2(n->right, d+1);
 	for(i=0; i<d; i++)
 		printf("    ");
-	printf("(%d) %d\n", n->info, n->height);
+	printf("(%d)\n", n->info);
 	printNode2(n->left, d+1);
 
 }
