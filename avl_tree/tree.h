@@ -58,7 +58,21 @@ int insertTree(Tree *t, int info);
 /**
 * Remove elementos da arvore
 */
-
 int removeTree(Tree *t, int info);
+
+/**
+* Altura da arvore binaria
+*/
+int treeHeight(Tree *t);
+
+/**
+* imprime a arvore na tela
+*/
+void printTree(Tree *t);
+
+/**
+*
+*/
+void destroyTree(Tree *t);
 
 #endif

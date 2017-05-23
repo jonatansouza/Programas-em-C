@@ -4,12 +4,17 @@
 
 int main(int argc, char const *argv[]) {
 	Tree* root = createTree();
-	insertTree(root, 10);
-	insertTree(root, 20);
-	insertTree(root, 30);
-	insertTree(root, 40);
-	removeTree(root, 10);
-
-	printf("%i\n", (*root)->info);
+	int a;
+	while (1) {
+		printf("digite um valor\n");
+		scanf("%d", &a);
+		if (a == 'q') {
+			return 1;
+		}
+		insertTree(root, a);
+		printf("arvore avl\n");
+		printTree(root);
+	}
+	destroyTree(root);
 	return 0;
 }

@@ -25,10 +25,41 @@ int highestValue(int a, int b);
 
 /* retorn o menor no */
 Node* searchLowest(Node *t);
+
+void destroyNode(Node *n);
+
+void printNode(Node *n);
+
+void printNode2(Node *n, int d);
+
 /**
         AUXILIAR FUNCTIONS
                                 END
  **/
+
+
+void printTree(Tree *t){
+	printNode(*t);
+}
+
+void destroyTree(Tree *t){
+	if(t == NULL)
+		return;
+	destroyNode(*t);
+	free(t);
+}
+
+
+int treeHeight(Tree *t){
+	int l, r;
+	if(t==NULL || *t==NULL)
+		return 0;
+	l = treeHeight(&((*t)->left));
+	r = treeHeight(&((*t)->right));
+	return (l > r) ? l+1 : r+1;
+}
+
+
 
 int insertTree(Tree *t, int info){
 	Node *node;
@@ -206,4 +237,39 @@ Node* searchLowest(Node *t){
 		n2 = n2->left;
 	}
 	return n1;
+}
+
+void destroyNode(Node *n){
+	if(n == NULL)
+		return;
+	destroyNode(n->left);
+	destroyNode(n->right);
+	free(n);
+	n = NULL;
+}
+
+void printNode(Node *n){
+	printNode2(n, 0);
+	/*int i;
+	   if(n == NULL)
+	        return;
+	   printNode(n->left);
+	   for (i = 0; i < n->height; i++) {
+	        printf("          ");
+	   }
+	   printf("(%d) %d\n", n->info, n->height);
+	   printNode(n->right);*/
+
+}
+
+void printNode2(Node *n, int d){
+	int i;
+	if(n == NULL)
+		return;
+	printNode2(n->right, d+1);
+	for(i=0; i<d; i++)
+		printf("    ");
+	printf("(%d) %d\n", n->info, n->height);
+	printNode2(n->left, d+1);
+
 }
