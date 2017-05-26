@@ -154,6 +154,9 @@ int greedySearch(Graph *g){
 	while(s != NULL && count != g->elements) {
 		pickTop(s, &current);
 		aux = searchVertex(g, current);
+		if(aux->edges == NULL){
+			break;
+		}
 		while(!highestEdge(aux->edges, &major, delimiter)) {
 			if(major == INT_MIN) {
 				pop(&s, NULL);
@@ -163,6 +166,7 @@ int greedySearch(Graph *g){
 			}
 			if(!isDiscovered(discovered, count, major)) {
 				push(&s, major);
+				printf("maior vizinho ainda nao visitado %d\n", major);
 				discovered[count++] = major;
 				printf("visitando %d\n", discovered[count-1]);
 				break;
@@ -198,7 +202,6 @@ int highestEdge(Edge *e, int *major, int delimiter){
 		/* printf("%d id, %d major, %d delimiter\n", aux->vertex->id, (*major), delimiter); */
 		(*major) = (aux->vertex->id > (*major) && aux->vertex->id < delimiter) ?  aux->vertex->id : (*major);
 	}
-
 	return 0;
 }
 

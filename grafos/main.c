@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 	printf("Grafos\n");
 	insertVertex(&g, 1);
 	insertVertex(&g, 3);
-	 insertVertex(&g, 4); 
+	insertVertex(&g, 4); 
 	insertVertex(&g, 2);
 	insertEdge(g, 3, 2);
 	insertEdge(g, 3, 3);
