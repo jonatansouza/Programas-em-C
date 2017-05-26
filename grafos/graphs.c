@@ -20,6 +20,7 @@ struct _graph {
 	struct _graph *next;
 };
 
+
 /**
  *      AUXILIAR FUNCTIONS
  **/
@@ -30,6 +31,9 @@ Graph * searchVertexByNext(Graph *g, Graph *n);
 Graph * searchGraphVertex(Graph *g, int id);
 int createConnection(Vertex *v1, Vertex *v2);
 int removeConnection(Vertex *v1, Vertex *v2);
+int highestEdge(Edge *e, int *major,int delimiter);
+int isDiscovered(int *discovered, int elements, int n);
+
 /**
  *        AUXILIAR FUNCTIONS END
  **/
@@ -85,19 +89,19 @@ int removeVertex(Graph **g, int id){
 	Graph *trash = NULL, *p = NULL;
 	Edge *e = NULL;
 	if((trash = searchGraphVertex(*g, id)) != NULL) {
-		for (e = trash->vertex->edges; e!=NULL; e = e->next){
+		for (e = trash->vertex->edges; e!=NULL; e = e->next) {
 			removeConnection(e->vertex, trash->vertex);
 		}
 
 		if((p = searchVertexByNext(*g, trash)) == NULL) {
 			trash = (*g);
 			(*g) = (*g)->next;
-			(*g)->elements --;
+			(*g)->elements--;
 			free(trash);
 			return 0;
 		}else{
 			p->next = trash->next;
-			(*g)->elements --;
+			(*g)->elements--;
 			free(trash);
 			return 0;
 		}
@@ -135,22 +139,69 @@ void displayGraph(Graph *g){
 	}
 }
 
-int greedyGraph(Graph *g){
-	int *visited = (int *) malloc(sizeof(g->elements));
-	Graph *aux = NULL;
-	Edge *e = NULL;
-	for(aux = g; aux != NULL; aux = aux->next) {
-		printf("id: %d [", aux->vertex->id);
-		for(e = aux->vertex->edges; e != NULL; e = e->next)
-			printf(" %d ", e->vertex->id);
-		printf("]\n");
+int greedySearch(Graph *g){
+	int *discovered = (int *) malloc(g->elements * sizeof(int));
+	Vertex * aux = NULL;
+	Stack *s = NULL;
+	int count = 0, current;
+	int major = INT_MIN;
+	int delimiter = INT_MAX;
+
+	/*inicializando com o primeiro vertex */
+	discovered[count++] = g->vertex->id;
+	push(&s, g->vertex->id);
+	printf("visitando %d\n", discovered[count-1]);
+	while(s != NULL && count != g->elements) {
+		pickTop(s, &current);
+		aux = searchVertex(g, current);
+		while(!highestEdge(aux->edges, &major, delimiter)) {
+			if(major == INT_MIN) {
+				pop(&s, NULL);
+				pickTop(s, &current);
+				printf("retornando %d\n", current);
+				break;
+			}
+			if(!isDiscovered(discovered, count, major)) {
+				push(&s, major);
+				discovered[count++] = major;
+				printf("visitando %d\n", discovered[count-1]);
+				break;
+			}
+			delimiter = major;
+			major = INT_MIN;
+		}
 	}
+	if(count != g->elements )
+		printf("grafo nao conexo\n" );
 	return 0;
 }
 
 /**
  * AUXILIAR FUNCTIONS
  */
+int isDiscovered(int *discovered, int elements, int n){
+	int i;
+	for (i = 0; i < elements; i++) {
+		if(discovered[i] == n) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int highestEdge(Edge *e, int *major, int delimiter){
+	Edge *aux;
+	if (e == NULL) {
+		return 1;
+	}
+	for(aux = e; aux != NULL; aux = aux->next) {
+		/* printf("%d id, %d major, %d delimiter\n", aux->vertex->id, (*major), delimiter); */
+		(*major) = (aux->vertex->id > (*major) && aux->vertex->id < delimiter) ?  aux->vertex->id : (*major);
+	}
+
+	return 0;
+}
+
 int createConnection(Vertex *v1, Vertex *v2){
 	Edge *n;
 	if(v1->edges == NULL) {

@@ -9,17 +9,15 @@ int main(int argc, char *argv[]){
 
 	printf("Grafos\n");
 	insertVertex(&g, 1);
-	insertVertex(&g, 2);
 	insertVertex(&g, 3);
-	insertEdge(g, 3, 1);
+	 insertVertex(&g, 4); 
+	insertVertex(&g, 2);
 	insertEdge(g, 3, 2);
 	insertEdge(g, 3, 3);
-	displayGraph(g);
-	removeVertex(&g, 1);
-	removeVertex(&g, 2);
+	insertEdge(g, 1, 2);
 
-	removeVertex(&g, 2);
 	displayGraph(g);
+	greedySearch(g);
 
 	return 0;
 }

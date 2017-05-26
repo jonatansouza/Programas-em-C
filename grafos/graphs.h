@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+#include "stack.h"
+
 
 struct _vertex;
 struct _edge;
@@ -18,7 +21,7 @@ int insertVertex(Graph **g, int id);
 int insertEdge(Graph *g, int a, int b);
 int removeVertex(Graph **g, int id);
 int removeEdge(Graph *g, int a, int b);
-int greedyGraph(Graph *g);
+int greedySearch(Graph *g);
 void displayGraph(Graph *g);
 
 #endif

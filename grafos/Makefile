@@ -2,7 +2,7 @@ CC := cc
 CFLAGS := -ansi -Wall -pedantic -Wimplicit-function-declaration
 LIBS := -lm
 
-OBJECTS := main.o graphs.o
+OBJECTS := main.o graphs.o stack.o
 
 main:${OBJECTS}
 	${CC} ${CFLAGS} -o main ${OBJECTS} ${LIBS}
