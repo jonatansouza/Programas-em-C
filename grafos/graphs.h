@@ -21,6 +21,7 @@ int insertVertex(Graph **g, int id);
 int insertEdge(Graph *g, int a, int b);
 int removeVertex(Graph **g, int id);
 int removeEdge(Graph *g, int a, int b);
+int greedyLocalSearch(Graph *g);
 int greedySearch(Graph *g);
 void displayGraph(Graph *g);
 

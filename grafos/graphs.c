@@ -33,6 +33,7 @@ int createConnection(Vertex *v1, Vertex *v2);
 int removeConnection(Vertex *v1, Vertex *v2);
 int highestEdge(Edge *e, int *major,int delimiter);
 int isDiscovered(int *discovered, int elements, int n);
+int copyEdgesDiscovered(int *edges, int * elements, Edge *e);
 
 /**
  *        AUXILIAR FUNCTIONS END
@@ -139,7 +140,7 @@ void displayGraph(Graph *g){
 	}
 }
 
-int greedySearch(Graph *g){
+int greedyLocalSearch(Graph *g){
 	int *discovered = (int *) malloc(g->elements * sizeof(int));
 	Vertex * aux = NULL;
 	Stack *s = NULL;
@@ -154,7 +155,7 @@ int greedySearch(Graph *g){
 	while(s != NULL && count != g->elements) {
 		pickTop(s, &current);
 		aux = searchVertex(g, current);
-		if(aux->edges == NULL){
+		if(aux->edges == NULL) {
 			break;
 		}
 		while(!highestEdge(aux->edges, &major, delimiter)) {
@@ -180,9 +181,33 @@ int greedySearch(Graph *g){
 	return 0;
 }
 
+int greedySearch(Graph *g){
+	int *discovered = (int *) malloc(g->elements * sizeof(int));
+	int *edgesAvailable = (int *) malloc(g->elements * sizeof(int));
+	Vertex * aux = NULL;
+	int bigger = INT_MIN;
+	int countDiscovered = 0, countEdges = 0;
+	discovered[countDiscovered++] = g->vertex->id;
+	copyEdgesDiscovered(edgesAvailable, &countEdges, g->vertex->edges);
+	while(!getBiggerEdge(edgesAvailable, countEdges, discovered, countDiscovered, &major)){
+		aux = searchVertex(g, major);
+		discovered[countDiscovered++] = aux->id;
+		copyEdgesDiscovered(edgesAvailable, &countEdges, aux->edges);
+
+	}
+
+	return 1;
+}
 /**
  * AUXILIAR FUNCTIONS
  */
+int getBiggerEdge(int *edges, int Ecount, int *discovered, Dcount, int *bigger){
+	int i, j;
+	for(i=0; i < Ecount; i++){
+		
+	}
+}
+
 int isDiscovered(int *discovered, int elements, int n){
 	int i;
 	for (i = 0; i < elements; i++) {
@@ -247,6 +272,20 @@ int removeConnection(Vertex *v1, Vertex *v2){
 	return 1;
 }
 
+int copyEdgesDiscovered(int *edges, int *elements, Edge *e){
+	Edge *aux;
+	int i, check;
+	for(aux = e; e != NULL; e = e->next) {
+		check = 1;
+		for(i=0; i < (*elements); i++)
+			if(e->vertex->id == edges[i])
+				check = 0;
+
+		if (check)
+			edges[(*elements)++] = e->vertex->id;
+	}
+	return 0;
+}
 
 Vertex * searchVertex(Graph *g, int id){
 	Graph *aux = NULL;
