@@ -16,6 +16,9 @@ typedef struct _edge Edge;
 typedef struct _vertex *Graph;
 
 int createGraph(Graph **g);
-int insertVertex(Graph *g, char name, int value);
-
+void displayGraph(Graph *g);
+int insertVertex(Graph *g, char name);
+int removeVertex(Graph *g, char name);
+int insertEdge(Graph *g, char origin, char destiny, int cost);
+int removeEdge(Graph *g, int a, int b, int cost);
 #endif
