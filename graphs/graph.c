@@ -42,12 +42,19 @@ int createGraph(Graph **g){
 void displayGraph(Graph *g){
 	Vertex *aux = NULL;
 	Edge *e = NULL;
+	printf("\n######################\n");
+	if(*g == NULL){
+		printf("grafo vazio\n");
+		return;
+	}
 	for(aux = *g; aux != NULL; aux = aux->next) {
 		printf("id: %c [", aux->name);
 		for(e = aux->edges; e != NULL; e = e->next)
 			printf(" %c (%d) ", e->vertex->name, e->cost);
 		printf("]\n");
 	}
+	printf("######################\n\n");
+
 }
 int insertVertex(Graph *g, char name){
 	Vertex *aux, *n;
@@ -68,7 +75,7 @@ int insertVertex(Graph *g, char name){
 			(*g)->next = aux;
 			return 0;
 		}
-		printf("Valor Duplicado\n");
+		printf("Erro: O vertice ja existe!\n");
 		return 1;
 	}
 }
@@ -95,7 +102,6 @@ int removeVertex(Graph *g, char name){
 	return 1;
 
 }
-
 
 int insertEdge(Graph *g, char origin, char destiny, int cost){
 	Vertex *vertex1 = NULL, *vertex2 = NULL;
@@ -129,8 +135,10 @@ int removeEdge(Graph *g, int a, int b, int cost){
 		printf("Vertex id:%c nao encontrado!\n", b);
 		return 1;
 	}
-	if(removeConnection(vertex1, vertex2, cost))
+	if(removeConnection(vertex1, vertex2, cost)){
+		printf("A conexão dos vertices [%c] <-> [%c] com custo (%d) não existe!\n", vertex1->name, vertex2->name, cost);
 		return 1;
+	}
 	removeConnection(vertex2, vertex1, cost);
 	return 0;
 }
@@ -234,6 +242,5 @@ int removeConnection(Vertex *v1, Vertex *v2, int cost){
 		free(trash);
 		return 0;
 	}
-	printf("A conexão dos vertices [%c] <-> [%c] não existe!\n", v1->name, v2->name);
 	return 1;
 }
