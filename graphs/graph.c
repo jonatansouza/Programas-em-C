@@ -27,6 +27,7 @@ Edge * searchEdgeByNext(Edge *e, Edge *n);
 Vertex * searchVertexByNext(Vertex *g, Vertex *n);
 int removeConnection(Vertex *v1, Vertex *v2, int cost);
 int removeAllConnections(Vertex *v, Vertex *del);
+int countVertex(Graph *g);
 /*
  * END AUXILIAR FUNCTIONS
  */
@@ -42,7 +43,7 @@ int createGraph(Graph **g){
 void displayGraph(Graph *g){
 	Vertex *aux = NULL;
 	Edge *e = NULL;
-	printf("\n######################\n");
+	printf("\n########## GRAFO COM %d vertices ############\n", countVertex(g));
 	if(*g == NULL){
 		printf("grafo vazio\n");
 		return;
@@ -53,7 +54,7 @@ void displayGraph(Graph *g){
 			printf(" %c (%d) ", e->vertex->name, e->cost);
 		printf("]\n");
 	}
-	printf("######################\n\n");
+	printf("#############################################\n\n");
 
 }
 int insertVertex(Graph *g, char name){
@@ -243,4 +244,15 @@ int removeConnection(Vertex *v1, Vertex *v2, int cost){
 		return 0;
 	}
 	return 1;
+}
+
+int countVertex(Graph *g){
+	Vertex *aux = NULL;
+	int count = 0;
+	if(*g == NULL){
+		return 0;
+	}
+	for(aux = *g; aux != NULL; aux = aux->next)
+		count ++;
+	return count;
 }
