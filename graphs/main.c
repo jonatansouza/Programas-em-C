@@ -7,6 +7,22 @@ int main(int argc, char const *argv[]) {
 	char vertex, dest, option;
 	Graph *g = NULL;
 	createGraph(&g);
+	/*insertVertex(g, 'a');
+	   insertVertex(g, 'b');
+	   insertVertex(g, 'c');
+	   insertVertex(g, 'd');
+	   insertVertex(g, 'e');
+	   insertVertex(g, 'f');
+	   insertEdge(g, 'a', 'b', 100);
+	   insertEdge(g, 'a', 'c', 300);
+	   insertEdge(g, 'a', 'a', 100);
+	   insertEdge(g, 'd', 'b', 70);
+	   insertEdge(g, 'f', 'c', 10);
+	   insertEdge(g, 'a', 'f', 10);
+	   insertEdge(g, 'a', 'f', 20);
+	   insertEdge(g, 'a', 'a', 100);
+	   displayGraph(g);
+	   greedySearch(g, 'a');*/
 
 	while (running) {
 		printf("\n1 - inserir vertice\n");
@@ -14,7 +30,8 @@ int main(int argc, char const *argv[]) {
 		printf("3 - remover vertice\n");
 		printf("4 - remover aresta\n");
 		printf("5 - imprimir grafo\n");
-		printf("6 - sair\n");
+		printf("6 - Busca Gulosa\n");
+		printf("7 - sair\n");
 		printf("\n$");
 
 		scanf(" %c", &option);
@@ -52,8 +69,16 @@ int main(int argc, char const *argv[]) {
 			displayGraph(g);
 			break;
 		case '6':
+			printf("Digite o par de vertices e o custo da aresta (exemplo: A B 100)\n");
+			printf(">>");
+			scanf(" %c", &vertex);
+			greedySearch(g, vertex);
+			break;
+
+		case '7':
 			printf("Até logo\n");
 			running = 0;
+			destroyGraph(g);
 			break;
 		default:
 			printf("Opção inválida\n");
