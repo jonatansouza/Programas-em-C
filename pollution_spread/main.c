@@ -24,7 +24,7 @@ int main(int argc, char const *argv[]) {
 		fgets(input, BUFFER_SIZE, stdin);
 		input[strlen(input)-1] = '\0'; /** remove extra return */
 	}
-
+	system("color 70");
 	if(PSRegister(&m, input)) {
 		PSCompute(m);
 		PSMatrixDestroy(m);

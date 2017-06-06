@@ -33,6 +33,8 @@ int isDigit(char input){
 
 int isUnary(char *infix, int infixSize){
 	int i;
+	if (infixSize == 0 && infix[infixSize] == '-')
+		return 1;
 	if(isDigit(infix[infixSize+1]) && infix[infixSize] == '-') {
 		for(i = (infixSize-1); i >= 0; i--) {
 			if(isDigit(infix[i]))
@@ -142,7 +144,7 @@ int rpnCalc(char *input, double *result){
 	char *aft;
 	while(i < strlen(input)) {
 		if(isDigit(input[i])) {
-			push(&s, strtod(&input[isUnary(input, (i-1)) ? i-1 : i], &aft));
+			push(&s, strtod(&input[i > 0 ? i-1 : i], &aft));
 			i = (aft - input);
 			continue;
 		}else if (isOperator(input[i]) && !isUnary(input, i)) {
