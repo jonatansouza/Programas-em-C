@@ -176,18 +176,23 @@ void greedySearch(Graph *g, char name)
 	int count = 0, total = countVertex(g);
 	Vertex **discovered = (Vertex **) malloc(total * sizeof (Vertex *));
 	Vertex *current = searchVertex(g, name);
-	printf("iniciando busca por %c \n", name);
+	printf("Iniciando a busca por \'%c\' \n", name);
 	discovered[count++] = current;
+	printf("%d vertice descoberto!\n", count);
 	while ((current = searchMaxEdge(discovered, count)) != NULL) {
-		printf("vertice descoberto %c\n", current->name);
+		printf("    |\n");
+		printf("    +-- inserindo vertice \'%c\' a lista de vertices descobertos\n", current->name);
 		discovered[count++] = current;
+		printf("%d vertices descobertos!\n", count);
 	}
-	printf("Grafo com %d vertices e %d descobertos!\n", total, count);
+	printf("\n********************** RESULTADO ***************************\n");
+	printf("*  Grafo com total de %d vertices e %d vertices conexos!     *\n", total, count);
 	if (total != count) {
-		printf("Grafo desconexo\n");
+		printf("*  GRAFO DESCONEXO!                                        *\n");
 	}else{
-		printf("Grafo conexo\n");
+		printf("*  GRAFO CONEXO!                                           *\n");
 	}
+	printf("************************************************************\n");
 	free(discovered);
 
 }
@@ -196,10 +201,10 @@ void greedySearch(Graph *g, char name)
 
 void freeEdges(Edge *e){
 	Edge *trash, *aux = e;
-	while(aux != NULL){
-			trash = aux;
-			aux = aux->next;
-			free(trash);
+	while(aux != NULL) {
+		trash = aux;
+		aux = aux->next;
+		free(trash);
 	}
 }
 
@@ -344,10 +349,12 @@ Vertex* searchMaxEdge(Vertex *discovered[], int count){
 	for (i = 0; i < count; i++)
 		for(e = discovered[i]->edges; e != NULL; e = e->next)
 			if(e->cost > max && !isVisited(discovered, count, e->vertex)) {
-				printf("maior custo encontrado %d vizinho %c\n", e->cost, e->vertex->name);
 				candidate = e;
 				max = e->cost;
 			}
-
+	if(candidate != NULL) {
+		printf("|\n");
+		printf("+-- Aresta de maior custo com vertice vertice não visitado ainda não visitado  [\'%c\' custo %d] \n", candidate->vertex->name, candidate->cost);
+	}
 	return candidate == NULL ? NULL : candidate->vertex;
 }

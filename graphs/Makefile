@@ -1,7 +1,6 @@
 CC := cc
-CFLAGS := -ansi -Wall -pedantic -Wimplicit-function-declaration
+CFLAGS := -ansi -Wall -pedantic -Wimplicit-function-declaration -DDEV
 LIBS := -lm
-
 OBJECTS := main.o graph.o
 
 main:${OBJECTS}
