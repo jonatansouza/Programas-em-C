@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "graph.h"
 
+#define BUFFER_SIZE 256
+
 int main(int argc, char const *argv[]) {
-	int running = 1, cost = 0;
+	int running = 1, cost = 0, i, j;
+	char input[BUFFER_SIZE], *aft;
 	char vertex, dest, option;
 	Graph *g = NULL;
 	createGraph(&g);
@@ -25,6 +29,7 @@ int main(int argc, char const *argv[]) {
 	   greedySearch(g, 'a');*/
 
 	while (running) {
+		memset(input, 0, BUFFER_SIZE);
 		printf("\n1 - inserir vertice\n");
 		printf("2 - inserir aresta\n");
 		printf("3 - remover vertice\n");
@@ -42,7 +47,30 @@ int main(int argc, char const *argv[]) {
 			scanf(" %c", &vertex);
 			if (!insertVertex(g, vertex)) {
 				printf("Vertice inserido!\n");
+				printf("Digite os vizinhos (exemplo:b10 c20 d30) obs: caso o valor nao seja indicado o default será 0\n");
+				getchar();
+				fgets(input, BUFFER_SIZE, stdin);
+				for(i = 0; i < strlen(input); i++) {
+					if(isalpha(input[i])) {
+						dest = input[i];
+						for(j = i+1; j <= strlen(input); j++) {
+							if(isdigit(input[j])) {
+								cost = strtod(&input[j], &aft);
+								i = (aft - input) -1;
+								if(!insertEdge(g, vertex, dest, cost))
+									printf("Aresta inserida [%c] - [%c] com custo %d!\n", vertex, dest, cost);
+								break;
+							}
+							if(isalpha(input[j]) || input[j] == '\0') {
+								if(!insertEdge(g, vertex, dest, 0))
+									printf("Aresta inserida [%c] - [%c] com custo 0!\n", vertex, dest);
+								break;
+							}
+						}
+					}
+				}
 			}
+
 			break;
 		case '2':
 			printf("Digite um par de vertices e um custo para a nova aresta (exemplo: A B 100)\n");

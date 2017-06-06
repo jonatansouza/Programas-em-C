@@ -46,8 +46,6 @@ int createGraph(Graph **g)
 }
 int destroyGraph(Graph *g)
 {
-	Vertex *aux = *g;
-	char trash;
 	while (*g != NULL)
 		removeVertex(g, (*g)->name);
 
@@ -136,11 +134,11 @@ int insertEdge(Graph *g, char origin, char destiny, int cost)
 	Edge *e = NULL;
 
 	if ((vertex1 = searchVertex(g, origin)) == NULL) {
-		printf("Vertex id:%d nao encontrado!\n", origin);
+		printf("Vertex id:%c nao encontrado!\n", origin);
 		return 1;
 	}
 	if ((vertex2 = searchVertex(g, destiny)) == NULL) {
-		printf("Vertex id:%d nao encontrado!\n", destiny);
+		printf("Vertex id:%c nao encontrado!\n", destiny);
 		return 1;
 	}
 	e = createConnection(vertex1, vertex2, cost);
