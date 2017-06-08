@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "colorterminal.h"
 
 struct matrix;
 typedef struct matrix Matrix;

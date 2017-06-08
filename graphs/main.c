@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
 	insertEdge(g, 'a', 'a', 100);
 	displayGraph(g);
 	greedySearch(g, 'a');
-
+	destroyGraph(g);
 	#else
 
         while (running) {

@@ -104,9 +104,7 @@ int PSCompute(Matrix *mtx){
 	} while(PSPoiseCheck(mtxcpy, mtx) >= ACCURACY);
 	printf("Calculo concluido com  %d iterações \n",count);
 	PSPrint(mtxcpy);
-
-
-	/* PSMatrixDestroy(aux); */
+	PSMatrixDestroy(aux);
 
 	return 1;
 }
@@ -119,12 +117,13 @@ int PSPrint(Matrix *mtx){
 	for (i = 0; i < mtx->rows; i++) {
 		for (j = 0; j < mtx->cols; j++) {
 			if(node[i*mtx->cols+j].type == 0)
-				printf("\x1B[34m");
+				printf("%s", BLU);
 			if(node[i*mtx->cols+j].type == 1)
-				printf("\x1B[32m");
+				printf("%s", GRN);
 			if(node[i*mtx->cols+j].type == 2)
-				printf("\x1B[31m");
+				printf("%s", RED);
 			printf("%5.1f ", node[i*mtx->cols+j].value);
+			printf("%s", RESET);
 		}
 		printf("\n" );
 	}
