@@ -2,14 +2,6 @@
 #include <string.h>
 #include "tree.h"
 
-int getOneChar(){
-	int c,garbage;
-	c=garbage=fgetc(stdin);
-	while(garbage!='\n'&&garbage!=EOF)
-		garbage=fgetc(stdin);
-	return c;
-}
-
 int main(int argc, char const *argv[]) {
 	Tree* root = createTree();
 	int sample;
@@ -18,23 +10,27 @@ int main(int argc, char const *argv[]) {
 	printf("#          AVL TREE          # \n");
 	printf("############################## \n");
 	while (1) {
-		printf("\nInserir (i), Remover (r), imprimir(p), sair (q):\n");
-		scanf("%c", &c);
-		scanf("%*[^\n]%*1[\n]");
+		printf("\ni - Inserir\nr - Remover\np - imprimir\nq - sair\n\n");
+		printf(">>");
+		scanf(" %c", &c);
 		switch (c) {
 		case 'i':
 		case 'I':
 			printf("digite um valor: ");
-			scanf("%d", &sample);
-			scanf("%*[^\n]%*1[\n]");
-			insertTree(root, sample);
+			scanf(" %d", &sample);
+			getchar();
+			if(insertTree(root, sample)){
+				printf("valor %d inserido com sucesso!\n", sample);
+			}
 			break;
 		case 'r':
 		case 'R':
 			printf("digite um valor: ");
-			scanf("%d", &sample);
-			scanf("%*[^\n]%*1[\n]");
-			removeTree(root, sample);
+			scanf(" %d", &sample);
+			getchar();
+			if(removeTree(root, sample)){
+				printf("valor %d removido com sucesso!\n", sample);
+			}
 			break;
 		case 'p':
 		case 'P':

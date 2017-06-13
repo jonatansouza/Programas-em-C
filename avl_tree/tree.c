@@ -4,8 +4,6 @@
 
 #include "tree.h"
 
-
-
 /**
         AUXILIAR FUNCTIONS
  **/
@@ -28,9 +26,7 @@ Node* searchLowest(Node *t);
 
 void destroyNode(Node *n);
 
-void printNode(Node *n);
-
-void printNode2(Node *n, int d);
+void printNode(Node *n, int d);
 
 /**
         AUXILIAR FUNCTIONS
@@ -39,7 +35,12 @@ void printNode2(Node *n, int d);
 
 
 void printTree(Tree *t){
-	printNode(*t);
+	printf("_______________________________________\n\n");
+	if(*t == NULL){
+		printf("Árvore Vazia!\n");
+	}
+	printNode(*t, 0);
+	printf("_______________________________________\n");
 }
 
 void destroyTree(Tree *t){
@@ -248,28 +249,15 @@ void destroyNode(Node *n){
 	n = NULL;
 }
 
-void printNode(Node *n){
-	printNode2(n, 0);
-	/*int i;
-	   if(n == NULL)
-	        return;
-	   printNode(n->left);
-	   for (i = 0; i < n->height; i++) {
-	        printf("          ");
-	   }
-	   printf("(%d) %d\n", n->info, n->height);
-	   printNode(n->right);*/
 
-}
-
-void printNode2(Node *n, int d){
+void printNode(Node *n, int d){
 	int i;
 	if(n == NULL)
 		return;
-	printNode2(n->right, d+1);
+	printNode(n->right, d+1);
 	for(i=0; i<d; i++)
 		printf("    ");
 	printf("(%d)\n", n->info);
-	printNode2(n->left, d+1);
+	printNode(n->left, d+1);
 
 }
