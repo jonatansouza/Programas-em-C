@@ -84,7 +84,7 @@ int rpnParse(char *infix, char *postfix){
 			continue;
 		}else if(isOperator(infix[i]) && !isUnary(infix, i)) {
 			if(infix[i] == 's' && (infix[i+1] != 'q' || infix[i+2] != 'r' || infix[i+3] != 't')) {
-				printf("Operador não permitido! Utilize \'sqrt\'\n");
+				printf("Operador nao permitido! Utilize \'sqrt\'\n");
 				return 1;
 			}else{
 				if (pickTop(ops, &operator)) {
@@ -156,10 +156,7 @@ int rpnCalc(char *input, double *result){
 		i++;
 	}
 	pop(&s, result);
-	if(!pop(&s, NULL)) {
-		printf("erro\n" );
-	}
-	return 0;
+	return (s != NULL) ? 1 : 0;
 }
 
 double rpnResolve(double x1, double x2, char op){

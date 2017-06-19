@@ -6,7 +6,7 @@
 #define _Matrix
 #define INPUT_MAX_SIZE 1000
 #define ACCURACY 1e-5
-#define POLLUTANT 200
+#define POLLUTANT 200 /* define o valor de poluente */
 
 #include <stdlib.h>
 #include <stdio.h>

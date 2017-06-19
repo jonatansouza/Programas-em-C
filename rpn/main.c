@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 	printf("       ||\n");
 	printf("=================================\n");
 
-	printf("Digite a expressão e pressione enter ou q para sair:\n");
+	printf("Digite a expressao e pressione enter ou q para sair:\n");
 	while (1) {
 		memset(input, 0, BUFFER_SIZE);
 		memset(stRpn, 0, BUFFER_SIZE);
@@ -25,11 +25,11 @@ int main(int argc, char *argv[]){
 		fgets(input, BUFFER_SIZE, stdin);
 
 		if (input[0] == 'q') {
-			printf("Até logo!\n");
+			printf("Ate logo!\n");
 			return 0;
 		}
 		if (rpnParse(input, stRpn)) {
-			printf("Ocorreu um erro no parser de \'%s\' por favor verifique a expressão digitada\n", input);
+			printf("Ocorreu um erro no parser de \'%s\' por favor verifique a expressao digitada\n", input);
 			continue;
 		};
 		if (rpnPrint(stRpn)) {
@@ -37,9 +37,9 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 		if (!rpnCalc(stRpn, &result)) {
-			printf("O resultado da expressão é %5.2f\n", result);
+			printf("O resultado da expressao e %5.2f\n", result);
 		} else {
-			printf("Ocorreu um erro durante o Calculo!\n");
+			printf("Erro: Expressao incorreta!\n");
 		}
 
 	}

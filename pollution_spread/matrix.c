@@ -40,7 +40,7 @@ int PSRegister(Matrix **mtx, char *filename){
 	int i=0, j=0;
 	fp = fopen(filename, "r");
 	if(fp == NULL) {
-		printf("Não foi possivel encontrar o arquivo\n" );
+		printf("Nao foi possivel encontrar o arquivo\n" );
 		return 0;
 	}
 	fscanf(fp, "%d %d", &m->rows, &m->cols);
@@ -102,7 +102,7 @@ int PSCompute(Matrix *mtx){
 		}
 		count++;
 	} while(PSPoiseCheck(mtxcpy, mtx) >= ACCURACY);
-	printf("Calculo concluido com  %d iterações \n",count);
+	printf("Calculo concluido com  %d iteracoes \n",count);
 	PSPrint(mtxcpy);
 	PSMatrixDestroy(aux);
 

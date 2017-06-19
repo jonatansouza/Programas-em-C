@@ -165,7 +165,7 @@ int removeEdge(Graph *g, int a, int b, int cost)
 		return 1;
 	}
 	if (removeConnection(vertex1, vertex2, cost)) {
-		printf("A conexão dos vertices [%c] <-> [%c] com custo (%d) não existe!\n", vertex1->name, vertex2->name, cost);
+		printf("A conexao dos vertices [%c] <-> [%c] com custo (%d) nao existe!\n", vertex1->name, vertex2->name, cost);
 		return 1;
 	}
 	removeConnection(vertex2, vertex1, cost);
@@ -257,7 +257,7 @@ Edge *createConnection(Vertex *v1, Vertex *v2, int cost)
 		v1->edges = n;
 		return n;
 	}
-	printf("A conexão dos vertices [%c] <-> [%c] ja existe!\n", v1->name, v2->name);
+	printf("A conexao dos vertices [%c] <-> [%c] ja existe!\n", v1->name, v2->name);
 	return NULL;
 }
 
@@ -354,7 +354,7 @@ Vertex* searchMaxEdge(Vertex *discovered[], int count){
 			}
 	if(candidate != NULL) {
 		printf("|\n");
-		printf("+-- Aresta de maior custo com vertice vertice não visitado ainda não visitado  [\'%c\' custo %d] \n", candidate->vertex->name, candidate->cost);
+		printf("+-- Aresta de maior custo com vertice nao visitado  [\'%c\' custo %d] \n", candidate->vertex->name, candidate->cost);
 	}
 	return candidate == NULL ? NULL : candidate->vertex;
 }

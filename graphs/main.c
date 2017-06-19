@@ -47,12 +47,12 @@ int main(int argc, char const *argv[]) {
                 scanf(" %c", &option);
                 switch (option) {
                 case '1':
-                        printf("Digite um id para o novo nó (apenas um caracter)\n");
+                        printf("Digite um id para o novo no (apenas um caracter)\n");
                         printf(">>");
                         scanf(" %c", &vertex);
                         if (!insertVertex(g, vertex)) {
                                 printf("Vertice inserido!\n");
-                                printf("Digite os vizinhos (exemplo:b10 c20 d30) obs: caso o valor nao seja indicado o default será 0\n");
+                                printf("Digite os vizinhos (exemplo:b10 c20 d30) obs: caso o valor nao seja indicado o default sera 0\n");
                                 getchar();
                                 fgets(input, BUFFER_SIZE, stdin);
                                 for(i = 0; i < strlen(input); i++) {
@@ -102,19 +102,19 @@ int main(int argc, char const *argv[]) {
                         displayGraph(g);
                         break;
                 case '6':
-                        printf("Digite um vértice para inicio da busca\n");
+                        printf("Digite um vertice para inicio da busca\n");
                         printf(">>");
                         scanf(" %c", &vertex);
                         greedySearch(g, vertex);
                         break;
 
                 case '7':
-                        printf("Até logo\n");
+                        printf("Ate logo\n");
                         running = 0;
                         destroyGraph(g);
                         break;
                 default:
-                        printf("Opção inválida\n");
+                        printf("Opcao invalida\n");
                         break;
                 }
         }
