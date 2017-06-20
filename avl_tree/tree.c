@@ -36,7 +36,7 @@ void printNode(Node *n, int d);
 
 void printTree(Tree *t){
 	printf("_______________________________________\n\n");
-	if(*t == NULL){
+	if(*t == NULL) {
 		printf("Árvore Vazia!\n");
 	}
 	printNode(*t, 0);
@@ -183,7 +183,7 @@ void rotationRR(Tree *t){
 	Node *node = (*t)->right;
 	(*t)->right = node->left;
 	node->left = (*t);
-	(*t)->height = highestValue(nodeHeight((*t)->left), nodeHeight((*t)->right)) +1;
+	(*t)->height = highestValue(nodeHeight((*t)->right), nodeHeight((*t)->left)) +1;
 	node->height = highestValue(nodeHeight(node->right), (*t)->height)+1;
 	(*t) = node;
 
@@ -218,10 +218,19 @@ Tree* createTree(){
 
 
 int nodeHeight(Node *n){
+	int altEsq, altDir;
 	if (n == NULL)
 		return -1;
-	return n->height;
+	altEsq = nodeHeight(n->left);
+	altDir = nodeHeight(n->right);
+	if (altEsq > altDir) {
+		return altEsq + 1;
+	}
+	else {
+		return altDir + 1;
+	}
 }
+
 int balanceFactorTree(Node *n){
 	int bf = nodeHeight(n->left) - nodeHeight(n->right);
 	return (bf >= 0 ? bf : bf*(-1));
@@ -257,7 +266,7 @@ void printNode(Node *n, int d){
 	printNode(n->right, d+1);
 	for(i=0; i<d; i++)
 		printf("    ");
-	printf("(%d)\n", n->info);
+	printf("[%d|%d]\n\n", n->info, nodeHeight(n));
 	printNode(n->left, d+1);
 
 }
