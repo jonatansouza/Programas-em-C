@@ -143,6 +143,7 @@ int removeTree(Tree *t, int info){
 			}
 		}
 	}
+	(*t)->height = highestValue(nodeHeight((*t)->left), nodeHeight((*t)->right)) + 1;
 	if((*t)->info == info) {
 		if(((*t)->left == NULL || (*t)->right == NULL)) {
 			node = *t;
@@ -218,17 +219,9 @@ Tree* createTree(){
 
 
 int nodeHeight(Node *n){
-	int altEsq, altDir;
-	if (n == NULL)
+	if(n == NULL)
 		return -1;
-	altEsq = nodeHeight(n->left);
-	altDir = nodeHeight(n->right);
-	if (altEsq > altDir) {
-		return altEsq + 1;
-	}
-	else {
-		return altDir + 1;
-	}
+	return n->height;
 }
 
 int balanceFactorTree(Node *n){
@@ -266,7 +259,7 @@ void printNode(Node *n, int d){
 	printNode(n->right, d+1);
 	for(i=0; i<d; i++)
 		printf("    ");
-	printf("[%d|%d]\n\n", n->info, nodeHeight(n));
+	printf("[%d|%d]\n\n", n->info, n->height);
 	printNode(n->left, d+1);
 
 }

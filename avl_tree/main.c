@@ -4,25 +4,12 @@
 
 int main(int argc, char const *argv[]) {
 	Tree* root = createTree();
-	int rands[10] = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}, i=0;
 	int sample;
 	char c;
 	printf("############################## \n");
 	printf("#          AVL TREE          # \n");
 	printf("############################## \n");
 
-	while ( i < 10) {
-		getchar();
-		insertTree(root, rands[i++]);
-		printTree(root);
-	}
-	while ( i >= 0) {
-		getchar();
-		removeTree(root, rands[i--]);
-		printTree(root);
-	}
-
-/*
 while (1) {
 	        printf("\ni - Inserir\nr - Remover\np - imprimir\nq - sair\n\n");
 	        printf(">>");
@@ -59,6 +46,6 @@ while (1) {
 	                printf("Entrada invalida!\n");
 	                break;
 	        }
-	   }*/
+	   }
 	return 0;
 }
