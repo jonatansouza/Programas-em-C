@@ -182,7 +182,6 @@ void greedySearch(Graph *g, int id)
 		printf("    |\n");
 		printf("    +-- inserindo vertice \'%d\' a lista de vertices descobertos\n", current->id);
 		discovered[count++] = current;
-		printf("%d vertices descobertos!\n", count);
 	}
 	printf("\n********************** RESULTADO ***************************\n");
 	printf("*  Grafo com total de %d vertices e %d vertices conexos!     *\n", total, count);
