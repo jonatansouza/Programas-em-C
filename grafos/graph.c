@@ -177,7 +177,6 @@ void greedySearch(Graph *g, int id)
 	Vertex *current = searchVertex(g, id);
 	printf("Iniciando a busca por \'%d\' \n", id);
 	discovered[count++] = current;
-	printf("%d vertice descoberto!\n", count);
 	while ((current = searchMaxEdge(discovered, count)) != NULL) {
 		printf("    |\n");
 		printf("    +-- inserindo vertice \'%d\' a lista de vertices descobertos\n", current->id);
