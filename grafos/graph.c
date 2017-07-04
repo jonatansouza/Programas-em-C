@@ -173,8 +173,12 @@ int removeEdge(Graph *g, int a, int b)
 void greedySearch(Graph *g, int id)
 {
 	int count = 0, total = countVertex(g);
-	Vertex **discovered = (Vertex **) malloc(total * sizeof (Vertex *));
 	Vertex *current = searchVertex(g, id);
+	Vertex **discovered = (Vertex **) malloc(total * sizeof (Vertex *));
+	if(current == NULL){
+		printf("o vertice %d nao existe\n", id);
+		return;
+	}
 	printf("Iniciando a busca por \'%d\' \n", id);
 	discovered[count++] = current;
 	while ((current = searchMaxEdge(discovered, count)) != NULL) {
