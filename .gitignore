@@ -1,3 +1,7 @@
+*.o
+*.swp
+*main
+
 */*.o
 */.*.swp
 */main
