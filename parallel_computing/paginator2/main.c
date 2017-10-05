@@ -14,23 +14,22 @@ int main(int argc, char **args){
 	pipe(fd);
 
 	if ((pid = fork()) == 0) {
-		printf("paginando\n");
 		dup2(fd[0], 0);
 		close(fd[1]);
 		execv(paginator[0], paginator);
 
 	}else{
-		printf("lendo\n");
 		dup2(fd[1], 1);
 		close(fd[0]);
-		int c;
+		char c;
 		FILE *file;
 		file = fopen("main.c", "r");
 		if (file) {
-			while ((c = getc(file)) != EOF)
-				putchar(c);
+			while ((c = (char) getc(file)) != EOF)
+				write(1, &c, sizeof(c));
 			fclose(file);
 		}
+		close(1);
 	}
 	waitpid(pid, NULL, 0);
   return 0;
