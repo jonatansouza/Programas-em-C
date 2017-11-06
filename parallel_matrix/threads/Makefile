@@ -1,5 +1,5 @@
 CC := cc
-CFLAGS := -ansi -Wall -pedantic -Wimplicit-function-declaration
+CFLAGS := -Wall -pedantic -Wimplicit-function-declaration
 LIBS := -pthread
 
 OBJECTS := main.o matrix.o

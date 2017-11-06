@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include "matrix.h"
 
 #define BUFFER_SIZE 256
@@ -11,6 +12,9 @@
 Matrix *A = NULL, *B = NULL, *C = NULL;
 int ELEMENTS = 0;
 int qtd_ants;
+struct timespec start, finish;
+double elapsed = 0;
+
 
 void *ant(void *itr){
 	int val = (intptr_t) itr;
@@ -57,13 +61,23 @@ int main(int argc, char const *argv[]) {
 	for (i = 0; i < qtd_ants; i++) {
 		pthread_create(&threads[i], NULL, ant, (void *) (intptr_t) i);
 	}
+
+	clock_gettime(CLOCK_MONOTONIC, &start);
+
 	for (i = 0; i < qtd_ants; i++) {
 		pthread_join(threads[i], NULL);
 	}
 
-	matrix_print(A);
+	clock_gettime(CLOCK_MONOTONIC, &finish);
+
+	elapsed = (finish.tv_sec - start.tv_sec);
+	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+	printf("tempo de execução.. %g \n", elapsed);
+
+/*	matrix_print(A);
 	matrix_print(B);
-	matrix_print(C);
+	matrix_print(C);*/
+
 	matrix_destroy(A);
 	matrix_destroy(B);
 	matrix_destroy(C);

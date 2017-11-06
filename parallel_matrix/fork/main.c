@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <sys/shm.h>
+#include <time.h>
 #include "matrix.h"
 
 #define BUFFER_SIZE 256
@@ -14,6 +15,8 @@ int main(int argc, char const *argv[]) {
 	int qtd_ants, i;
 	int father=0, child=0;
 	char input[BUFFER_SIZE];
+	clock_t start, finish;
+	double elapsed = 0;
 
 	printf("*******************************\n" );
 	printf("*                             *\n" );
@@ -42,6 +45,9 @@ int main(int argc, char const *argv[]) {
 	}
 
 	father = getpid();
+	printf("Criando processos e executando a multiplicação!\n");
+	start = clock();
+
 	for (i = 0; i < qtd_ants; i++) {
 		if(father == getpid()) {
 			child = fork();
@@ -57,10 +63,13 @@ int main(int argc, char const *argv[]) {
 	if (father == getpid()) {
 		/*WAIrT ALL PROCESS */
 		while ((wait( NULL)) != -1);
+		finish = clock();
 
 		/*matrix_print(A);
 		matrix_print(B);
 		matrix_print(C);*/
+		elapsed = (double) (finish - start) / CLOCKS_PER_SEC;
+		printf("tempo de execução.. %g \n", elapsed);
 		matrix_destroy(A);
 		matrix_destroy(B);
 	}
