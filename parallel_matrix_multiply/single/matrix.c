@@ -45,17 +45,9 @@ int matrix_register(Matrix **mtx, char *filename){
 
 int matrix_result_create(Matrix **mtx, Matrix *A, Matrix *B){
 	int rows, cols;
-	rows = A->rows;
-	cols =  B->cols;
-
-	if(rows != cols){
-			printf("ERRO: As matrizes possuem dimensões diferentes, não é possivel realizar a multiplicação!\n");
-			return 0;
-	}
-
 	Matrix *m = (Matrix *) malloc(sizeof(Matrix));
-	m->rows = rows;
-	m->cols = cols;
+	m->rows = rows = A->rows;
+	m->cols = cols =  B->cols;
 	m->nodes = (Node *) malloc(rows * cols * sizeof(Node));
 	(*mtx) = m;
 	return 1;

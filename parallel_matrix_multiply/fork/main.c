@@ -82,6 +82,7 @@ int main(int argc, char const *argv[]) {
 
 		matrix_destroy(A);
 		matrix_destroy(B);
+		matrix_destroyShm(C);
 	}
 
 
