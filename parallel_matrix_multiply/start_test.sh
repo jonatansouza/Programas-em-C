@@ -41,19 +41,19 @@ echo "****************************";
 
 for ((i=2; i <= 8; i=i+1));
        do
-         for ((j=500; j <= 1000; j=j+500));
+         for ((j=500; j <= 2000; j=j+500));
                 do
                   echo "matriz $j $j com $i Processos"
-                  ./fork/main samples/matrix$j samples/matrix$j $i  >> results/fork/${j}_${i}.out
-            done;
+                  ./fork/main samples/matrix$j samples/matrix$j "$i"  >> results/fork/${j}_${i}.out
+            done
        done
 
  echo "****************************";
 for ((i=2; i <= 8; i=i+1));
     do
-        for ((j=500; j <= 1000; j=j+500));
+        for ((j=500; j <= 2000; j=j+500));
                do
                    echo "matriz $j $j com $i Threads"
-                   ./threads/main samples/matrix$j samples/matrix$j $i  >> results/threads/${j}_${i}.out
-              done;
+                   ./threads/main samples/matrix$j samples/matrix$j "$i"  >> results/threads/${j}_${i}.out
+              done
 done
