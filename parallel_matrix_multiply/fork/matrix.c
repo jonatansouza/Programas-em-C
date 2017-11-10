@@ -39,6 +39,13 @@ int matrix_register(Matrix **mtx, char *filename){
 		}
 	}
 	fclose(fp);
+	printf("%d %d\n", m->rows, m->cols);
+	for (i = 0; i < m->rows; i++) {
+		for (j = 0; j < m->cols; j++) {
+			printf(" %f ",	m->nodes[i*m->cols+j].value);
+		}
+		printf("\n");
+	}
 	(*mtx) = m;
 	return 1;
 }
@@ -93,8 +100,8 @@ int matrix_destroy(Matrix *mtx){
 
 int matrix_destroyShm(Matrix *mtx){
 	int els = mtx->rows;
-        munmap(mtx->nodes, (sizeof mtx->nodes)*els*els);
-        munmap(mtx, sizeof *mtx);
+  munmap(mtx->nodes, (sizeof (Node))*els*els);
+  munmap(mtx, sizeof *mtx);
 	return 1;
 }
 
