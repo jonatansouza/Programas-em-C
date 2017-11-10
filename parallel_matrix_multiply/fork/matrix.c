@@ -39,13 +39,6 @@ int matrix_register(Matrix **mtx, char *filename){
 		}
 	}
 	fclose(fp);
-	printf("%d %d\n", m->rows, m->cols);
-	for (i = 0; i < m->rows; i++) {
-		for (j = 0; j < m->cols; j++) {
-			printf(" %f ",	m->nodes[i*m->cols+j].value);
-		}
-		printf("\n");
-	}
 	(*mtx) = m;
 	return 1;
 }
