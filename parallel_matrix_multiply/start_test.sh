@@ -33,7 +33,7 @@ echo "single"
 for ((i=500; i <= 2000; i=i+500));
        do
          echo "matriz $i $i"
-         ./single/main samples/matrix$i samples/matrix$i  >> results/single/$i.out
+         { time ./single/main samples/matrix$i samples/matrix$i ;}   &>> results/single/$i.out
 
        done;
 
@@ -44,7 +44,7 @@ for ((i=2; i <= 8; i=i+1));
          for ((j=500; j <= 2000; j=j+500));
                 do
                   echo "matriz $j $j com $i Processos"
-                  ./fork/main samples/matrix$j samples/matrix$j "$i"  >> results/fork/${j}_${i}.out
+                  { time ./fork/main samples/matrix$j samples/matrix$j "$i" ;} &>> results/fork/${j}_${i}.out
             done
        done
 
@@ -54,6 +54,6 @@ for ((i=2; i <= 8; i=i+1));
         for ((j=500; j <= 2000; j=j+500));
                do
                    echo "matriz $j $j com $i Threads"
-                   ./threads/main samples/matrix$j samples/matrix$j "$i"  >> results/threads/${j}_${i}.out
+                   { time ./threads/main samples/matrix$j samples/matrix$j "$i"  ;}  &>> results/threads/${j}_${i}.out
               done
 done
