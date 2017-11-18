@@ -30,9 +30,9 @@ int main(int argc, char *argv[]) {
 	int ELEMENTS = 0;
 	struct timeval start, finish;
 	char input[BUFFER_SIZE];
-	int i, child = 0;
+	int i, count, totalJobs, child = 0;
 	int npes, myrank;
-	double *col_array;
+	double *col_array, *response;
 	char nome[100];
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &npes);
@@ -65,6 +65,9 @@ int main(int argc, char *argv[]) {
 			}
 			ELEMENTS = matrix_get_elements(C);
 			col_array = (double *) malloc(sizeof(double) * ELEMENTS);
+			totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) +1;
+			response = (double *) malloc(sizeof(double)* totalJobs * 2);
+
 		}else{
 
 			printf("ERRO: Numero incorreto de argumentos\n");
@@ -72,10 +75,7 @@ int main(int argc, char *argv[]) {
 			return 1;
 
 		}
-		/*for (i = 0; i < ELEMENTS; i++)
-		        for(j=0; j< ELEMENTS; j++)
-		                matrix_multiply_by_element(C, i, j, A, B);
-		 */
+
 
 		for (i = 0; i < (npes-1); i++) {
 			MPI_Send(&ELEMENTS, 1, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
@@ -98,67 +98,60 @@ int main(int argc, char *argv[]) {
 			MPI_Send(&child, 1, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
 		}
 
+
 		MPI_Status st;
+		int processCount = 0;
+		count = 0;
+		while (processCount < (npes-1)) {
+			MPI_Recv(response, totalJobs * 2, MPI_DOUBLE, processCount, DEFAULT_TAG, MPI_COMM_WORLD, &st);
+			while (response[count] != END_TASK) {
+				if(response[count] != END_TASK) {
+					matrix_set_elements(C, (int) response[count], response[count+1]);
+					count++;
+					count++;
+				}else{
 
-	/*	for (i = 0; i < (npes-1); i++) {
-			MPI_Recv(rc, (jobsPerProcess+1), MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-			int count = 0;
-			while (rc[count].position != END_TASK) {
-				matrix_set_elements(C, rc[count].position, rc[count].value);
-				count++;
+				}
 			}
-		}*/
+			processCount++;
+			count = 0;
+		}
 
-		/* matrix_print(A);
+		matrix_print(A);
 		matrix_print(B);
 		matrix_print(C);
- */
 
 		matrix_destroy(A);
 		matrix_destroy(B);
 		matrix_destroy(C);
 	}else{
-		int position = 0, count = 0,  ELEMENTS = 0;
+		/**
+		        child process
+		 */
+
+		int position = 0, count = 0,  ELEMENTS = 0, totalJobs = 0;
 		double *row, *col;
-		double response[2];
+		double *response;
 		MPI_Status st;
 		MPI_Recv(&ELEMENTS, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
 		row = (double * ) malloc (sizeof(double) * ELEMENTS);
 		col = (double * ) malloc (sizeof(double) * ELEMENTS);
+		totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) +1;
+		response = (double *) malloc(sizeof(double) * totalJobs * 2);
 		while (position != END_TASK) {
 			MPI_Recv(&position, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
 			if (position != END_TASK) {
 				MPI_Recv(row, ELEMENTS, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
 				MPI_Recv(col, ELEMENTS, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-
-				printf("****** %d \n", myrank);
-				printf("linha \n");
-				for (i = 0; i < ELEMENTS; i++) {
-					printf(" %lf ", row[i]);
-				}
-				printf("\ncoluna \n");
-				for (i = 0; i < ELEMENTS; i++) {
-					printf(" %lf ", col[i]);
-				}
-				printf("\n");
-
-				/* calcular aqui */
-
-				/* remover isso */
-				response[0] = END_TASK;
-				response[1] = END_TASK;
-				/* remover isso */
-
-				MPI_Send(response, 2, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
+				response[count++] = position;
+				matrix_multiply_by_segment(row, col, ELEMENTS, &response[count++]);
 			}else{
 				break;
 			}
 		}
-		response[0] = END_TASK;
-		response[1] = END_TASK;
-
-		MPI_Send(response, 2, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
-
+		response[count++] = END_TASK;
+		response[count++] = END_TASK;
+		MPI_Send(response, count, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
