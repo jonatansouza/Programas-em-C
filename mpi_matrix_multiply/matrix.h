@@ -20,6 +20,8 @@ int matrix_result_create(Matrix **mtx, Matrix *A, Matrix *B);
 int matrix_get_elements(Matrix *m);
 int matrix_set_elements(Matrix *m, int position, double value);
 int matrix_out_of_bounds(Matrix *m, int position);
+int matrix_recieve_col_array(Matrix *A, double *col_array, int position);
+double * get_all_nodes(Matrix *A);
 int matrix_destroy(Matrix *mtx);
 
 

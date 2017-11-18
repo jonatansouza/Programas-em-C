@@ -39,6 +39,8 @@ int matrix_register(Matrix **mtx, char *filename){
 	return 1;
 }
 
+
+
 int matrix_result_create(Matrix **mtx, Matrix *A, Matrix *B){
 	int rows, cols;
 	Matrix *m = (Matrix *) malloc(sizeof(Matrix));
@@ -60,6 +62,19 @@ int matrix_print(Matrix *mtx){
 		printf("\n" );
 	}
 	return 0;
+}
+
+
+int matrix_recieve_col_array(Matrix *A, double *col_array, int position){
+	int i;
+	for (i = 0; i < A->cols; i++) {
+		col_array[i] = A->nodes[i*A->cols+position];
+	}
+	return 1;
+}
+
+double * get_all_nodes(Matrix *A){
+		return A->nodes;
 }
 
 int matrix_multiply_by_element(Matrix *C, int row, int col , Matrix *A, Matrix *B){
