@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
 			}
 			ELEMENTS = matrix_get_elements(C);
 			col_array = (double *) malloc(sizeof(double) * ELEMENTS);
-			totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) +1;
-			response = (double *) malloc(sizeof(double)* totalJobs * 2);
+			totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
+			response = (double *) malloc(sizeof(double)* (totalJobs * 2));
 
 		}else{
 
@@ -136,8 +136,8 @@ int main(int argc, char *argv[]) {
 		MPI_Recv(&ELEMENTS, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
 		row = (double * ) malloc (sizeof(double) * ELEMENTS);
 		col = (double * ) malloc (sizeof(double) * ELEMENTS);
-		totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) +1;
-		response = (double *) malloc(sizeof(double) * totalJobs * 2);
+		totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
+		response = (double *) malloc(sizeof(double) * (totalJobs * 2));
 		while (position != END_TASK) {
 			MPI_Recv(&position, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
 			if (position != END_TASK) {
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 		}
 		response[count++] = END_TASK;
 		response[count++] = END_TASK;
-		MPI_Send(response, count, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
+		MPI_Send(response, totalJobs * 2 , MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
