@@ -13,17 +13,6 @@ long module(long n){
 	return ((n >= 0 ) ? n : -(n));
 }
 
-typedef struct {
-	double *row;
-	double *col;
-	int position;
-} Job_To_Do;
-
-typedef struct {
-	double value;
-	int position;
-} Results_Collection;
-
 
 int main(int argc, char *argv[]) {
 	Matrix *A = NULL, *B = NULL, *C = NULL;
