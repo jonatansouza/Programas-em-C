@@ -50,6 +50,8 @@ int main(int argc, char *argv[]) {
         /**
  * Check the user insert the file path from args
  */
+
+
 	if (myrank == (npes-1)) {
 		if(argc > 2) {
 			strcpy(input, argv[1]);
@@ -67,13 +69,10 @@ int main(int argc, char *argv[]) {
 			col_array = (double *) malloc(sizeof(double) * ELEMENTS);
 			totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
 			response = (double *) malloc(sizeof(double)* (totalJobs * 2));
-
 		}else{
-
 			printf("ERRO: Numero incorreto de argumentos\n");
 			printf("Usage: ./main <matrix_A> <matrix_B>\n");
 			return 1;
-
 		}
 
 
@@ -117,9 +116,9 @@ int main(int argc, char *argv[]) {
 			count = 0;
 		}
 
-		matrix_print(A);
+		/*matrix_print(A);
 		matrix_print(B);
-		matrix_print(C);
+		matrix_print(C);*/
 
 		matrix_destroy(A);
 		matrix_destroy(B);
@@ -134,6 +133,9 @@ int main(int argc, char *argv[]) {
 		double *response;
 		MPI_Status st;
 		MPI_Recv(&ELEMENTS, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
+		if(ELEMENTS == END_TASK){
+			MPI_Finalize();
+		}
 		row = (double * ) malloc (sizeof(double) * ELEMENTS);
 		col = (double * ) malloc (sizeof(double) * ELEMENTS);
 		totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
