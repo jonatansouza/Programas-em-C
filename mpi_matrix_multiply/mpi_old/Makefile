@@ -1,10 +1,9 @@
 CC := mpicc
 
 OBJECTS := main.o matrix.o
-LIBS := -lm
 
 main:${OBJECTS}
-	${CC} -o main ${OBJECTS} ${LIBS}
+	${CC} -o main ${OBJECTS} 
 
 clean:
 	rm *.o main

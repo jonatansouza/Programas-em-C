@@ -58,9 +58,9 @@ int main(int argc, char const *argv[]) {
 	/*gettimeofday(&finish, NULL);
 	printf("%ld.%ld \n", (long) (finish.tv_sec - start.tv_sec), module((long) (finish.tv_usec - start.tv_usec)));
 	*/
-	/*matrix_print(A);
-	matrix_print(B);*/
-	/*matrix_print(C);*/
+	matrix_print(A);
+	matrix_print(B);
+	matrix_print(C);
 	matrix_destroy(A);
 	matrix_destroy(B);
 	matrix_destroy(C);

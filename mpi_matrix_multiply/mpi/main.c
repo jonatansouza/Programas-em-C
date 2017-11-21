@@ -15,7 +15,7 @@ long module(long n){
 
 
 int main(int argc, char *argv[]) {
-	Matrix *A = NULL, *B = NULL, *C = NULL;
+	double *A = NULL, *B = NULL, *C = NULL;
 	int ELEMENTS = 0;
 	struct timeval start, finish;
 	char input[BUFFER_SIZE];
@@ -44,109 +44,57 @@ int main(int argc, char *argv[]) {
 	if (myrank == (npes-1)) {
 		if(argc > 2) {
 			strcpy(input, argv[1]);
-			if (!matrix_register(&A, input)) {
+			if ((ELEMENTS = matrix_register(&A, input)) < 0) {
 				return 0;
 			}
 			strcpy(input, argv[2]);
-			if(!matrix_register(&B, input)) {
+			if(matrix_register(&B, input) != ELEMENTS) {
+				printf("ERRO: Não é possível realizar a multipĺicação!\n");
 				return 0;
 			}
-			if(!matrix_result_create(&C, A, B)) {
+			if(!matrix_result_create(&C, ELEMENTS)) {
 				return 0;
 			}
-			ELEMENTS = matrix_get_elements(C);
-			col_array = (double *) malloc(sizeof(double) * ELEMENTS);
-			totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
-			response = (double *) malloc(sizeof(double)* (totalJobs * 2));
 		}else{
 			printf("ERRO: Numero incorreto de argumentos\n");
 			printf("Usage: ./main <matrix_A> <matrix_B>\n");
 			return 1;
 		}
 
-
-		for (i = 0; i < (npes-1); i++) {
-			MPI_Send(&ELEMENTS, 1, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
-		}
-
-		double *row = get_all_nodes(A);
-		while (matrix_out_of_bounds(C, child)) {
-			MPI_Send(&child, 1, MPI_INT, child%(npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
-
-			matrix_recieve_col_array(B, col_array, child%ELEMENTS);
-
-			MPI_Send(&row[(child/ELEMENTS)*ELEMENTS], ELEMENTS, MPI_DOUBLE, child%(npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
-			MPI_Send(col_array, ELEMENTS, MPI_DOUBLE, child%(npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
+		child = 0;
+		while (matrix_out_of_bounds(C, child, ELEMENTS*ELEMENTS)) {
+			matrix_multiply_by_element(C, ELEMENTS, child / ELEMENTS, child % ELEMENTS, A, B);
 			child++;
 		}
 
-		/* Finalizando todos os processos*/
-		child = END_TASK;
-		for (i = 0; i < (npes-1); i++) {
-			MPI_Send(&child, 1, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
-		}
+	}
+	/*matrix_print(A, ELEMENTS);
+	   matrix_print(B, ELEMENTS);
+	   matrix_print(C, ELEMENTS);
+	 */
+	/*	matrix_destroy(A);
+	        matrix_destroy(B);
+	        matrix_destroy(C);*/
 
+	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Bcast(&ELEMENTS, 1, MPI_INT, npes-1, MPI_COMM_WORLD);
 
-		MPI_Status st;
-		int processCount = 0;
-		count = 0;
-		while (processCount < (npes-1)) {
-			MPI_Recv(response, totalJobs * 2, MPI_DOUBLE, processCount, DEFAULT_TAG, MPI_COMM_WORLD, &st);
-			while (response[count] != END_TASK) {
-				if(response[count] != END_TASK) {
-					matrix_set_elements(C, (int) response[count], response[count+1]);
-					count++;
-					count++;
-				}else{
+	if(myrank != npes-1){
+		matrix_result_create(&A, ELEMENTS);
+		matrix_result_create(&B, ELEMENTS);
+	}
 
-				}
-			}
-			processCount++;
-			count = 0;
-		}
+	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Bcast(B, ELEMENTS*ELEMENTS, MPI_DOUBLE, npes-1, MPI_COMM_WORLD);
+	MPI_Bcast(A, ELEMENTS*ELEMENTS, MPI_DOUBLE, npes-1, MPI_COMM_WORLD);
 
-		/*matrix_print(A);
-		matrix_print(B);
-		matrix_print(C);*/
+	if(myrank != npes-1){
 
-		matrix_destroy(A);
-		matrix_destroy(B);
-		matrix_destroy(C);
 	}else{
-		/**
-		        child process
-		 */
 
-		int position = 0, count = 0,  ELEMENTS = 0, totalJobs = 0;
-		double *row, *col;
-		double *response;
-		MPI_Status st;
-		MPI_Recv(&ELEMENTS, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-		if(ELEMENTS == END_TASK){
-			MPI_Finalize();
-		}
-		row = (double * ) malloc (sizeof(double) * ELEMENTS);
-		col = (double * ) malloc (sizeof(double) * ELEMENTS);
-		totalJobs = ((ELEMENTS * ELEMENTS) / (npes-1)) + 2;
-		response = (double *) malloc(sizeof(double) * (totalJobs * 2));
-		while (position != END_TASK) {
-			MPI_Recv(&position, 1, MPI_INT, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-			if (position != END_TASK) {
-				MPI_Recv(row, ELEMENTS, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-				MPI_Recv(col, ELEMENTS, MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD, &st);
-				response[count++] = position;
-				matrix_multiply_by_segment(row, col, ELEMENTS, &response[count++]);
-			}else{
-				break;
-			}
-		}
-		response[count++] = END_TASK;
-		response[count++] = END_TASK;
-		MPI_Send(response, totalJobs * 2 , MPI_DOUBLE, (npes-1), DEFAULT_TAG, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
-
 
 	return 0;
 }
