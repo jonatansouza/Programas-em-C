@@ -9,7 +9,7 @@
  * Alloc a matrix and read all data from file
  *
  */
-int matrix_register(double **nodes, char *filename){
+int matrix_register_A(double **nodes, char *filename){
 	int rows, cols, i, j;
 	FILE *fp;
 	float dump;
@@ -29,6 +29,26 @@ int matrix_register(double **nodes, char *filename){
 	fclose(fp);
 	return rows;
 }
+int matrix_register_B(double **nodes, char *filename){
+	int rows, cols, i, j;
+	FILE *fp;
+	float dump;
+	fp = fopen(filename, "r");
+	if(fp == NULL) {
+		printf("Nao foi possivel encontrar o arquivo\n" );
+		return -1;
+	}
+	fscanf(fp, "%d %d", &rows, &cols);
+	(*nodes) = (double *) malloc(rows * cols * sizeof(double));
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < cols; j++) {
+			fscanf(fp, "%f", &dump);
+			(*nodes)[j*rows+i] = dump;
+		}
+	}
+	fclose(fp);
+	return rows;
+}
 
 
 
@@ -37,12 +57,17 @@ int matrix_result_create(double **nodes, int els){
 	return 1;
 }
 
+int matrix_result_alloc(double **nodes, int els){
+	(*nodes) = (double *) malloc(els * sizeof(double));
+	return 1;
+}
+
 int matrix_print(double *nodes, int els){
 	int i, j;
 	printf("print matrix\n");
 	for (i = 0; i < els; i++) {
 		for (j = 0; j < els; j++) {
-			printf("%5.1f ", nodes[i*els+j]);
+			printf("% 5.1lf  ", nodes[i*els+j]);
 		}
 		printf("\n" );
 	}
@@ -60,10 +85,12 @@ int matrix_multiply_by_element(double *C, int els, int row, int col , double *A,
 }
 
 int matrix_multiply_by_segment(double *segA, double *segB, int els, double *result){
-	int i;
-	*result = 0;
+	int i, j;
 	for (i = 0; i < els; i++) {
-		*result += (segA[i]) * (segB[i]);
+		result[i] = 0;
+		for (j = 0; j < els; j++) {
+				result[i] += (segA[j]) * (segB[i*els+j]);
+		}
 	}
 	return 1;
 }
