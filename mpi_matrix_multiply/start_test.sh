@@ -2,11 +2,11 @@
 
 MATRIX_INI_SIZE=500
 MATRIX_INI_INC=500
-MATRIX_INI_FINAL=1000
+MATRIX_INI_FINAL=2000
 
-PROCESS_INI=1
-PROCESS_INI_INC=1
-PROCESS_INI_FINAL=4
+PROCESS_INI=5
+PROCESS_INI_INC=5
+PROCESS_INI_FINAL=60
 
 
 cd matrix_generator;
@@ -48,6 +48,6 @@ for ((i="$PROCESS_INI"; i <= "$PROCESS_INI_FINAL"; i=i+"$PROCESS_INI_INC"));
          for ((j="$MATRIX_INI_SIZE"; j <= "$MATRIX_INI_FINAL"; j=j+"$MATRIX_INI_INC"));
                  do
                   echo "matriz $j $j com $i Processos"
-                  { time mpirun -np "$i" ./mpi/main samples/matrix$j samples/matrix$j  ;}  &>> results/mpi/${j}_${i}.out
+                  { time mpirun -np "$i" --map-by node -machinefile hosts ./mpi/main samples/matrix$j samples/matrix$j  ;}  &>> results/mpi/${j}_${i}.out
             done
 done
